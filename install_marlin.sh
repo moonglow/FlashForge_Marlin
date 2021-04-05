@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Usage: ./install_marlin.sh dreamer_nx 0.4
 
 PRINTER_TYPE="${1:-dreamer_nx}"
 RELEASE_VERSION="${2:-0.4}"

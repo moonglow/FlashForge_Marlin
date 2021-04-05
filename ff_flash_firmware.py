@@ -2,6 +2,8 @@
 
 '''
 Original script by: https://gist.github.com/zerog2k
+
+Usage:  ./ff_flash_firmware.py /path/to/firmware.bin
 '''
 
 import hashlib
@@ -22,7 +24,7 @@ RETRY_COUNT = 20
 TARGET_FIRMWARE_NAME = "firmware.bin"
 
 if len(sys.argv) < 1:
-  raise ValueError('expecting firmware file: usage: ./install_marlin.py '
+  raise ValueError('expecting firmware file: usage: ./ff_flash_firmware.py '
                    '/path/to/firmware.bin')
 
 firmware = sys.argv[1]
