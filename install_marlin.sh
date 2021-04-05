@@ -26,6 +26,6 @@ echo "Flashing ${TARGET_RELEASE_NAME} to FlashForge"
 echo "***********"
 echo "Ready to Flash"
 echo "***********"
-read  -n 1 -p " Switch off your printer and connect to this computer via USB. When your are ready, switch on printer and press enter!"
+read  -n 1 -p " Switch off your printer and connect to this computer via USB. When your are ready, press enter and switch on printer.."
 
 ./ff_flash_firmware.py ${TARGET_RELEASE_NAME}
