@@ -59,17 +59,19 @@ while True:
 
     sleep(MAX_WAIT_TIME)
 
+# setup the configurations before the communication
 printer.set_configuration()
 
 # add a bit delay to reduce timeouts
 sleep(1)
 
+print('Starting control loop...')
 # start control
 printer.write(CONTROL_ENDPOINT_ADDR, '~M601 S0\r\n')
 ret = printer.read(BULK_IN_ENDPOINT_ADDR, 5000)
-
 print(to_string(ret.tobytes()))
 
+print('Writing firmware...')
 # start fw write
 fw_write_str = "~M28 {} 0:/sys/{}\r\n".format(firmware_size, TARGET_FIRMWARE_NAME)
 printer.write(CONTROL_ENDPOINT_ADDR, fw_write_str)
@@ -90,6 +92,8 @@ print(to_string(ret.tobytes()))
 ret = printer.read(BULK_IN_ENDPOINT_ADDR, 1000)
 print(to_string(ret.tobytes()))
 
+
+print('Triggering firmware...')
 # trigger fw flash on next boot?
 printer.write(CONTROL_ENDPOINT_ADDR, '~M600\r\n')
 ret = printer.read(BULK_IN_ENDPOINT_ADDR, 1000)
@@ -97,6 +101,7 @@ print(to_string(ret.tobytes()))
 ret = printer.read(BULK_IN_ENDPOINT_ADDR, 1000)
 print(to_string(ret.tobytes()))
 
+print('Ending control loop...')
 # stop control
 printer.write(CONTROL_ENDPOINT_ADDR, '~M602\r\n')
 ret = printer.read(BULK_IN_ENDPOINT_ADDR, 1000)
