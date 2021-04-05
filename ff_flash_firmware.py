@@ -18,7 +18,7 @@ FLASHFORGE_VENDOR_ID = 0x0315
 CONTROL_EP = 0x01
 FILE_EP = 0x03
 MAX_WAIT_TIME = 0.5  # 500 milliseconds
-RETRY_COUNT = 5
+RETRY_COUNT = 20
 TARGET_FIRMWARE_NAME = "firmware.bin"
 
 if len(sys.argv) < 1:
