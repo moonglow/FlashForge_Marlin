@@ -34,7 +34,7 @@ m = hashlib.md5()
 fw = open(firmware, 'rb')
 m.update(fw.read())
 firmware_checksum = m.hexdigest()
-fwsize = fw.tell()
+firmware_size = fw.tell()
 fw.seek(0)
 
 print('Flashing firmware: ', firmware)
@@ -69,7 +69,7 @@ ret = printer.read(0x81, 5000)
 print(to_string(ret.tobytes()))
 
 # start fw write
-fw_write_str = "~M28 {} 0:/sys/{}\r\n".format(fwsize, TARGET_FIRMWARE_NAME)
+fw_write_str = "~M28 {} 0:/sys/{}\r\n".format(firmware_size, TARGET_FIRMWARE_NAME)
 printer.write(CONTROL_EP, fw_write_str)
 ret = printer.read(0x81, 1000)
 print(to_string(ret.tobytes()))
