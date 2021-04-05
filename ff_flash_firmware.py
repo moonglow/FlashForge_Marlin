@@ -27,6 +27,13 @@ if len(sys.argv) < 1:
 
 firmware = sys.argv[1]
 
+# calculate checksum of the firmware
+m = hashlib.md5()
+fw = open(firmware, 'rb')
+m.update(fw.read())
+firmware_checksum = m.hexdigest()
+fwsize = fw.tell()
+fw.seek(0)
 
 print('Flashing firmware: ', firmware)
 print('Searching for Flashforge printers ...')
@@ -48,29 +55,23 @@ while True:
 
     sleep(MAX_WAIT_TIME)
 
-
-m = hashlib.md5()
-
-fw = open(firmware, 'rb')
-m.update(fw.read())
-md5sum = m.hexdigest()
-fwsize = fw.tell()
-fw.seek(0)
-
 printer.set_configuration()
+
+# add a bit delay to reduce timeouts
+sleep(5)
 
 # start control
 printer.write(CONTROL_EP, '~M601 S0\r\n')
-ret = printer.read(0x81, 500)
+ret = printer.read(0x81, 5000)
 
 print(to_string(ret.tobytes()))
 
 # start fw write
 fw_write_str = "~M28 {} 0:/sys/{}\r\n".format(fwsize, TARGET_FIRMWARE_NAME)
 printer.write(CONTROL_EP, fw_write_str)
-ret = printer.read(0x81, 500)
+ret = printer.read(0x81, 1000)
 print(to_string(ret.tobytes()))
-ret = printer.read(0x81, 500)
+ret = printer.read(0x81, 1000)
 print(to_string(ret.tobytes()))
 
 # write fw to endpoint
@@ -78,23 +79,23 @@ printer.write(FILE_EP, fw.read(),
               5000)  # seems like i was getting timeouts below about 1500ms
 
 # finish fw write
-fw_write_str = "~M29 {}\r\n".format(md5sum)
+fw_write_str = "~M29 {}\r\n".format(firmware_checksum)
 printer.write(CONTROL_EP, fw_write_str)
-ret = printer.read(0x81, 500)
+ret = printer.read(0x81, 1000)
 print(to_string(ret.tobytes()))
-ret = printer.read(0x81, 500)
+ret = printer.read(0x81, 1000)
 print(to_string(ret.tobytes()))
 
 # trigger fw flash on next boot?
 printer.write(CONTROL_EP, '~M600\r\n')
-ret = printer.read(0x81, 500)
+ret = printer.read(0x81, 1000)
 print(to_string(ret.tobytes()))
-ret = printer.read(0x81, 500)
+ret = printer.read(0x81, 1000)
 print(to_string(ret.tobytes()))
 
 # stop control
 printer.write(CONTROL_EP, '~M602\r\n')
-ret = printer.read(0x81, 500)
+ret = printer.read(0x81, 1000)
 print(to_string(ret.tobytes()))
-ret = printer.read(0x81, 500)
+ret = printer.read(0x81, 1000)
 print(to_string(ret.tobytes()))

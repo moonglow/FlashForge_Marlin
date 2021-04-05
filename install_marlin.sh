@@ -6,17 +6,19 @@ RELEASE_NAME="marlin_${PRINTER_TYPE}"
 TARGET_RELEASE_NAME="${RELEASE_NAME}_v${RELEASE_VERSION}.bin"
 FLASHFORGE_MARLIN_RELEASE_URL="https://github.com/moonglow/FlashForge_Marlin/releases/download/v${RELEASE_VERSION}/${RELEASE_NAME}.bin"
 
-echo "Downloading FlashForge_Marlin v${RELEASE_VERSION}"
+if [ ! -f "${TARGET_RELEASE_NAME}" ]; then
+  echo "Downloading FlashForge_Marlin v${RELEASE_VERSION}"
 
-wget -q "${FLASHFORGE_MARLIN_RELEASE_URL}" 2> /dev/null
-if [ $? != 0 ]; then
-  echo "release does not exist, exiting..."
-  exit 1
+  wget -q "${FLASHFORGE_MARLIN_RELEASE_URL}" 2> /dev/null
+  if [ $? != 0 ]; then
+    echo "release does not exist, exiting..."
+    exit 1
+  fi
+
+  mv "${RELEASE_NAME}.bin" ${TARGET_RELEASE_NAME}
+
+  echo "Flashforge Marlin downloaded: ${TARGET_RELEASE_NAME}"
 fi
-
-mv "${RELEASE_NAME}.bin" ${TARGET_RELEASE_NAME}
-
-echo "Flashforge Marlin downloaded: ${TARGET_RELEASE_NAME}"
 
 
 echo "Flashing ${TARGET_RELEASE_NAME} to FlashForge"
