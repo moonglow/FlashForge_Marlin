@@ -1,5 +1,20 @@
 #  FlashForge Marlin
 
+#### What's works?
+
+- [x] TFT display ( ILI9488 and OTM4802 )
+- [x] Touch screen controller ( XPT2046 )
+- [x] Chamber and bed temperature sensors ( internal ADC )
+- [x] Extruder K-type thermocouple with external ADC ( ADS1118 )
+- [x] Chamber RGB light ( PCA9632 PWM controller )
+- [x] Stepper motor current setup ( MCP4018 digital potentiometer )
+- [x] Print cooling fan, chamber fan, endstops, stepper motor signals control
+- [x] External SD card
+- [x] USB ( virtual serial port )
+
+#### What's not works?
+- [ ] FlashForge WiFi module
+
 #### Supported printers:
 
 - DreamerNX
@@ -8,3 +23,4 @@
 
 #### Support me
 <a href="https://www.buymeacoffee.com/moonglow" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+
