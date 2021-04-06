@@ -70,7 +70,6 @@ printer.write(CONTROL_ENDPOINT_ADDR, '~M601 S0\r\n')
 # You need to restart the control loop, this is weird but this seems to work
 print('Starting control loop...')
 sleep(5)
-printer.set_configuration()
 printer.write(CONTROL_ENDPOINT_ADDR, '~M601 S0\r\n')
 
 ret = printer.read(BULK_IN_ENDPOINT_ADDR, 5000)
