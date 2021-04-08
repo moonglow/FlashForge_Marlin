@@ -13,7 +13,11 @@
 - [x] USB ( virtual serial port )
 
 #### What's not works?
-- [ ] FlashForge WiFi module
+- [ ] WiFi does not work  (see [comment](https://github.com/moonglow/FlashForge_Marlin/issues/3#issuecomment-813024193))
+    - Marlin does not support FF stock wifi chip.  
+- [ ] Internal Storage not available  (see [comment](https://github.com/moonglow/FlashForge_Marlin/issues/3#issuecomment-813024193))
+    - This is disabled to enable restoring to FF stock firmware
+- [ ] Power-loss recovery not available for Dreamer & Dreamer Nx  (see [Issue#5](https://github.com/moonglow/FlashForge_Marlin/issues/5))  
 
 #### Supported printers:
 
