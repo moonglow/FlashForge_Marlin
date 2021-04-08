@@ -1,5 +1,7 @@
 #  Marlin 2.x Firmware for Flashforge 3D Printers
 
+Current firmware is based on 2.0.7.2  
+
 #### What's works?
 
 - [x] TFT display ( ILI9488 and OTM4802 )
@@ -12,7 +14,7 @@
 - [x] External SD card
 - [x] USB ( virtual serial port )
 
-#### What's not works?
+#### What doesn't work?
 - [ ] WiFi does not work  (see [comment](https://github.com/moonglow/FlashForge_Marlin/issues/3#issuecomment-813024193))
     - Marlin does not support FF stock wifi chip.  
 - [ ] Internal Storage not available  (see [comment](https://github.com/moonglow/FlashForge_Marlin/issues/3#issuecomment-813024193))
