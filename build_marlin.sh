@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
-# Usage: ./build_marlin.sh dreamer_nx
+# Usage: ./build_marlin.sh <printer_type> <swap_extruder>
+#
+# ./build_marlin.sh dreamer_nx
+# ./build_marlin.sh inventor <true/false>
+# ./build_marlin.sh dreamer <true/false>
+
 set -o errexit
 set -o nounset
 set -o pipefail
@@ -98,13 +103,12 @@ function build_marlin() {
    # change printer type
    sed -i "s/^\/\/#define $marlin_printer_config$/#define $marlin_printer_config/" Configuration.h >/dev/null
 
-   if [[ "${SWAP_EXTRUDER}" = true ]]; then
-      if [[ "${PRINTER_TYPE}" == "inventor"]] || [["${PRINTER_TYPE}" == "dreamer" ]]; then
-        sed -i "s/^\/\/#define FF_EXTRUDER_SWAP$/#define FF_EXTRUDER_SWAP/" Configuration.h
-      fi
+   if [ "${SWAP_EXTRUDER}" = true ] && [ "${PRINTER_TYPE}" == "inventor" ] || [ "${PRINTER_TYPE}" == "dreamer" ]; then
+      sed -i "s/^\/\/#define FF_EXTRUDER_SWAP/#define FF_EXTRUDER_SWAP/" Configuration.h
    fi
 
   cp Configuration.h "${BUILD_DIR}/Configuration.${PRINTER_TYPE}.h"
+
 
   cd ${MARLIN_SOURCE_DIR}
   platformio run -e FF_F407ZG
@@ -136,7 +140,7 @@ function cleanup() {
 }
 
 function start_build_process() {
-  __msg_info "Starting building process"
+  __msg_info "Starting building process for ${PRINTER_TYPE}"
   mkdir -p "${BUILD_DIR}"
 
   check_command_present platformio "Head onto https://docs.platformio.org/en/latest/core/installation.html to install platformio"
