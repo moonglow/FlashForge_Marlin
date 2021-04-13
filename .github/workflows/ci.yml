@@ -1,0 +1,56 @@
+name: Build FF Marlin
+
+on:
+  push:
+    branches:
+    - release/*
+    tags:
+      - '*'
+    
+jobs:
+  build:
+     strategy:
+       matrix:
+          machine: [dreamer-nx,dreamer,inventor]
+          
+     runs-on: ubuntu-latest
+     steps:
+      - uses: actions/checkout@v2
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v2
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Set up Python
+        uses: actions/setup-python@v2
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade platformio
+      - name: Check out repository
+        uses: actions/checkout@v2   
+        with:
+          submodules: recursive
+      - name: Building ${{ matrix.machine }}
+        run:  |
+         platformio --version
+         ./build_marlin.sh ${{ matrix.machine }}
+         
+      
+      - name: Release  ${{ matrix.machine }}
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: false
+          prerelease: true
+          files: |
+            ./BUILD/*.bin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # You don't need to add this in secrets it's by default.

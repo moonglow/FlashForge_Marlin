@@ -85,6 +85,7 @@ function build_marlin() {
    backup_restore_config 0
 
    fw_file=".pio/build/FF_F407ZG/firmware.bin"
+   marlin_printer_config=""
 
    cd "${MARLIN_SOURCE_DIR}/Marlin"
 
