@@ -1,0 +1,3 @@
+[submodule "flashforge_firmware_tool"]
+	path = flashforge_firmware_tool
+	url = https://github.com/moonglow/flashforge_firmware_tool.git
