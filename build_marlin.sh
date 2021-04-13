@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# Usage: ./install_marlin.sh dreamer_nx 0.4
+# Usage: ./build_marlin.sh dreamer_nx
 set -o errexit
 set -o nounset
 set -o pipefail
 
 # global variables
 PRINTER_TYPE="${1:-dreamer_nx}"
-RELEASE_NAME="marlin_${PRINTER_TYPE}"
+SWAP_EXTRUDER=${2:-false}
 
+RELEASE_NAME="marlin_${PRINTER_TYPE}"
 MARLIN_SOURCE_DIR=$PWD/Marlin
 FF_ENC_DIR=$PWD/flashforge_firmware_tool
 BUILD_DIR=$PWD/BUILD
@@ -32,10 +33,10 @@ function __msg_info() {
 }
 
 function check_command_present() {
-  if ! [ -x "$(command -v $1)" ]; then
+  if ! [[ -x "$(command -v $1)" ]]; then
     __msg_error "$1 does not exists" >&2
 
-    if [ -n "$2" ]; then
+    if [[ -n "$2" ]]; then
       __msg_error "$2"
     fi
     exit 1
@@ -43,7 +44,7 @@ function check_command_present() {
 }
 
 function check_file_exists() {
-  if ! [ -f  "$1" ]; then
+  if ! [[ -f  "$1" ]]; then
     __msg_error "$1 does not exists" >&2
     exit 1
   else
@@ -61,15 +62,58 @@ function build_ff_enc_tool() {
   mv ff_fw_tool "${BUILD_DIR}/"
 
 }
+
+function backup_restore_config(){
+   cd "${MARLIN_SOURCE_DIR}/Marlin"
+  #backup
+  if [[ $1 -eq 0 ]]; then
+     cp Configuration.h Configuration.h.bkp
+  # restore
+  else
+    mv Configuration.h.bkp Configuration.h
+  fi
+  cd -
+}
+
 function build_marlin() {
    __msg_info "Building Marlin firmware"
+   backup_restore_config 0
+
    fw_file=".pio/build/FF_F407ZG/firmware.bin"
 
-   cd "${MARLIN_SOURCE_DIR}"
+   cd "${MARLIN_SOURCE_DIR}/Marlin"
+
+   if [[ "${PRINTER_TYPE}" == "dreamer_nx" ]]; then
+       marlin_printer_config="FF_DREAMER_NX_MACHINE"
+   fi
+
+   if [[ "${PRINTER_TYPE}" == "dreamer" ]]; then
+       marlin_printer_config="FF_DREAMER_MACHINE"
+   fi
+
+   if [[ "${PRINTER_TYPE}" == "inventor" ]]; then
+       marlin_printer_config="FF_INVENTOR_MACHINE"
+   fi
+
+   # change printer type
+   sed -i "s/^\/\/#define $marlin_printer_config$/#define $marlin_printer_config/" Configuration.h >/dev/null
+
+   if [[ "${SWAP_EXTRUDER}" = true ]]; then
+      if [[ "${PRINTER_TYPE}" == "inventor"]] || [["${PRINTER_TYPE}" == "dreamer" ]]; then
+        sed -i "s/^\/\/#define FF_EXTRUDER_SWAP$/#define FF_EXTRUDER_SWAP/" Configuration.h
+      fi
+   fi
+
+  cp Configuration.h "${BUILD_DIR}/Configuration.${PRINTER_TYPE}.h"
+
+  cd ${MARLIN_SOURCE_DIR}
   platformio run -e FF_F407ZG
 
   __msg_info "...done"
+
   check_file_exists "$fw_file"
+  # restore the backup
+  backup_restore_config 1
   mv "$fw_file" "${BUILD_DIR}/"
 }
 
