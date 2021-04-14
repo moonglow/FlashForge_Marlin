@@ -4,15 +4,21 @@
 
 Current firmware is based on 2.0.7.2  
 
+## Building from source
 
-#### Supported printers:
 
-- DreamerNX (dreamer_nx)
-- Dreamer (dreamer)
-- Inventor (inventor)
 
-#### Support me
-<a href="https://www.buymeacoffee.com/moonglow" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+
+## Supported printers:
+
+- DreamerNX
+- Dreamer
+- Inventor
+
+## Credits
+
+- This repo is a fork of the excellent effort made by  [@moonglow](https://github.com/moonglow), consider supporting for his work.  
+
 
 #### Disclaimer
-The firmware is still in an experimental state and even though it could  work, please exercise your own judgement on using it. I am not liable nor bare responsibility in the event of a failure. 
+The firmware is still in an experimental state and even though it could  work, please exercise your own judgement on using it. I am not liable, nor I bare responsibility in the event of a failure. 
