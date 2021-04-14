@@ -25,8 +25,8 @@
 
 /* you must be sure what you know what you do :) */
 #define FF_FLASHAIR_FIX
-//#define FF_INVENTOR_MACHINE
-#define FF_DREAMER_MACHINE
+#define FF_INVENTOR_MACHINE
+//#define FF_DREAMER_MACHINE
 //#define FF_DREAMER_NX_MACHINE
 //#define FF_EXTRUDER_SWAP
 
