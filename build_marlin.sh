@@ -17,6 +17,7 @@ RELEASE_NAME="marlin_${PRINTER_TYPE}"
 MARLIN_SOURCE_DIR=$PWD/Marlin
 FF_ENC_DIR=$PWD/flashforge_firmware_tool
 BUILD_DIR=$PWD/BUILD
+CONFIG_FOLDER=$PWD/configs
 FINAL_FW="${BUILD_DIR}/${RELEASE_NAME}.bin"
 # log levels
 ERROR=1
@@ -73,9 +74,11 @@ function backup_restore_config(){
   #backup
   if [[ $1 -eq 0 ]]; then
      cp Configuration.h Configuration.h.bkp
+     cp Configuration_adv.h Configuration_adv.h.bkp
   # restore
   else
     mv Configuration.h.bkp Configuration.h
+    mv Configuration_adv.h.bkp Configuration_adv.h
   fi
   cd -
 }
@@ -85,30 +88,16 @@ function build_marlin() {
    backup_restore_config 0
 
    fw_file=".pio/build/FF_F407ZG/firmware.bin"
-   marlin_printer_config=""
 
    cd "${MARLIN_SOURCE_DIR}/Marlin"
+   cp "${CONFIG_FOLDER}/Configuration-${PRINTER_TYPE}.h"  Configuration.h
+   cp "${CONFIG_FOLDER}/Configuration_adv-${PRINTER_TYPE}.h"  Configuration_adv.h
 
-   if [[ "${PRINTER_TYPE}" == "dreamer_nx" ]]; then
-       marlin_printer_config="FF_DREAMER_NX_MACHINE"
-   fi
-
-   if [[ "${PRINTER_TYPE}" == "dreamer" ]]; then
-       marlin_printer_config="FF_DREAMER_MACHINE"
-   fi
-
-   if [[ "${PRINTER_TYPE}" == "inventor" ]]; then
-       marlin_printer_config="FF_INVENTOR_MACHINE"
-   fi
-
-   # change printer type
-   sed -i "s/^\/\/#define $marlin_printer_config$/#define $marlin_printer_config/" Configuration.h >/dev/null
-
-   if [ "${SWAP_EXTRUDER}" = true ] && [ "${PRINTER_TYPE}" == "inventor" ] || [ "${PRINTER_TYPE}" == "dreamer" ]; then
-      sed -i "s/^\/\/#define FF_EXTRUDER_SWAP/#define FF_EXTRUDER_SWAP/" Configuration.h
-   fi
-
-  cp Configuration.h "${BUILD_DIR}/Configuration.${PRINTER_TYPE}.h"
+  if [ "${SWAP_EXTRUDER}" = true ]; then
+     if [ "${PRINTER_TYPE}" == "inventor" ] || [ "${PRINTER_TYPE}" == "dreamer" ]; then
+      perl -i -pe 's/^\/\/#define FF_EXTRUDER_SWAP/#define FF_EXTRUDER_SWAP/' Configuration.h
+    fi
+  fi
 
 
   cd ${MARLIN_SOURCE_DIR}
