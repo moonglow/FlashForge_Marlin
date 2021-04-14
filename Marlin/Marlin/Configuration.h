@@ -19,6 +19,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+
+#include machine_config.h
+
 #pragma once
 
 #define CONFIG_EXAMPLES_DIR "FlashForge/CoreBoard"
