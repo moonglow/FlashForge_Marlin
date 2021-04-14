@@ -5,7 +5,7 @@ PRINTER_TYPE="${1:-dreamer_nx}"
 RELEASE_VERSION="${2:-0.4}"
 RELEASE_NAME="marlin_${PRINTER_TYPE}"
 TARGET_RELEASE_NAME="${RELEASE_NAME}_v${RELEASE_VERSION}.bin"
-FLASHFORGE_MARLIN_RELEASE_URL="https://github.com/moonglow/FlashForge_Marlin/releases/download/v${RELEASE_VERSION}/${RELEASE_NAME}.bin"
+FLASHFORGE_MARLIN_RELEASE_URL="https://github.com/tckb/FlashForge_Marlin/releases/download/v${RELEASE_VERSION}/${RELEASE_NAME}.bin"
 
 if [ ! -f "${TARGET_RELEASE_NAME}" ]; then
   echo "Downloading FlashForge_Marlin v${RELEASE_VERSION}"

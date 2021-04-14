@@ -54,4 +54,4 @@ jobs:
           files: |
             ./BUILD/*.bin
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # You don't need to add this in secrets it's by default.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
