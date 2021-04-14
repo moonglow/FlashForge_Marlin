@@ -1,6 +1,6 @@
 #  Marlin 2.x Firmware for Flashforge 3D Printers
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/tckb/FlashForge_Marlin/Build%20FF%20Marlin)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/tckb/FlashForge_Marlin/build-release)
 
 Current firmware is based on 2.0.7.2  
 
