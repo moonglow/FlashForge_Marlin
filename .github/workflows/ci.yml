@@ -11,7 +11,7 @@ jobs:
   build:
      strategy:
        matrix:
-          machine: [dreamer-nx,dreamer,inventor]
+          machine: [dreamer_nx,dreamer,inventor]
           
      runs-on: ubuntu-latest
      steps:
