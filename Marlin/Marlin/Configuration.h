@@ -19,24 +19,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+
+#include "machine_config.h"
+
 #pragma once
 
 #define CONFIG_EXAMPLES_DIR "FlashForge/CoreBoard"
 
 /* you must be sure what you know what you do :) */
 #define FF_FLASHAIR_FIX
-//#define FF_INVENTOR_MACHINE
-//#define FF_DREAMER_MACHINE
-//#define FF_DREAMER_NX_MACHINE
-//#define FF_EXTRUDER_SWAP
-
-#if NONE(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE,FF_DREAMER_NX_MACHINE)
-#define FF_DREAMER_NX_MACHINE
-#endif
-
-#if NONE(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE) && ENABLED( FF_EXTRUDER_SWAP )
-#error FF_EXTRUDER_SWAP works only with dreamer and inventor
-#endif
 
 /**
  * Configuration.h
@@ -158,9 +149,7 @@
 
 // This defines the number of extruders
 // :[0, 1, 2, 3, 4, 5, 6, 7, 8]
-#if ANY(FF_INVENTOR_MACHINE,FF_DREAMER_MACHINE)
-#define EXTRUDERS 2
-#else
+#ifndef EXTRUDERS
 #define EXTRUDERS 1
 #endif
 
@@ -334,9 +323,6 @@
 // Offset of the extruders (uncomment if using more than one and relying on firmware to position when changing).
 // The offset has to be X=0, Y=0 for the extruder 0 hotend (default extruder).
 // For the other hotends it is their distance from the extruder 0 hotend.
-#if ANY(FF_INVENTOR_MACHINE,FF_DREAMER_MACHINE)
-#define HOTEND_OFFSET_X { 0.0, -34.0 } // (mm) relative X-offset for each nozzle
-#endif
 //#define HOTEND_OFFSET_Y { 0.0, 5.00 }  // (mm) relative Y-offset for each nozzle
 //#define HOTEND_OFFSET_Z { 0.0, 0.00 }  // (mm) relative Z-offset for each nozzle
 
@@ -647,9 +633,8 @@
 #define USE_ZMIN_PLUG
 #define USE_XMAX_PLUG
 #define USE_YMAX_PLUG
-#if ENABLED(FF_INVENTOR_MACHINE)
-#define USE_ZMAX_PLUG
-#endif
+//#define USE_ZMAX_PLUG
+
 
 // Enable pullup for all endstops to prevent a floating state
 #define ENDSTOPPULLUPS
@@ -1121,13 +1106,14 @@
 // @section extruder
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
-#if ANY(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE)
-#define INVERT_E0_DIR false
-#define INVERT_E1_DIR false
-#else
+#ifndef INVERT_E0_DIR
 #define INVERT_E0_DIR true
+#endif
+
+#ifndef INVERT_E1_DIR
 #define INVERT_E1_DIR true
 #endif
+
 #define INVERT_E2_DIR false
 #define INVERT_E3_DIR false
 #define INVERT_E4_DIR false
@@ -1150,9 +1136,8 @@
 // :[-1,1]
 #define X_HOME_DIR  1
 #define Y_HOME_DIR  1
-#if ENABLED(FF_INVENTOR_MACHINE)
-#define Z_HOME_DIR  1
-#else
+
+#ifndef Z_HOME_DIR
 #define Z_HOME_DIR -1
 #endif
 
@@ -1169,29 +1154,9 @@
 #endif
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
-#if ENABLED(FF_INVENTOR_MACHINE)
-#define X_MAX_POS   (159.99-FF_TOOL_OFFSET)
-#define Y_MAX_POS    75.00
-#define X_MIN_POS  (-110.00-FF_TOOL_OFFSET)
-#define Y_MIN_POS   -75.00
-#elif ENABLED(FF_DREAMER_MACHINE)
-#define X_MAX_POS   (156.99-FF_TOOL_OFFSET)
-#define Y_MAX_POS    79.99
-#define X_MIN_POS  (-113.00-FF_TOOL_OFFSET)
-#define Y_MIN_POS   -79.99
-#elif ENABLED(FF_DREAMER_NX_MACHINE)
-#define X_MAX_POS   158.50
-#define Y_MAX_POS    76.23
-#define X_MIN_POS  -111.00
-#define Y_MIN_POS   -76.23
-#else
-#error Invalid printer model selection
-#endif
-
 #define Z_MIN_POS 0
-#if ENABLED(FF_INVENTOR_MACHINE)
-#define Z_MAX_POS 160
-#else
+
+#ifndef Z_MAX_POS
 #define Z_MAX_POS 150 /* original 140 */
 #endif
 
@@ -1415,9 +1380,7 @@
 #define LEVEL_BED_CORNERS
 
 #if ENABLED(LEVEL_BED_CORNERS)
-#if ANY(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE)
-  #define LEVEL_CORNERS_INSET_LFRB { 40, 30, 40, 30 } // (mm) Left, Front, Right, Back insets
-#else
+#ifndef LEVEL_CORNERS_INSET_LFRB
   #define LEVEL_CORNERS_INSET_LFRB { 30, 30, 30, 30 } // (mm) Left, Front, Right, Back insets
 #endif
   #define LEVEL_CORNERS_HEIGHT      0.0   // (mm) Z height of nozzle at leveling points

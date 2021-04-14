@@ -73,12 +73,12 @@ function backup_restore_config(){
    cd "${MARLIN_SOURCE_DIR}/Marlin"
   #backup
   if [[ $1 -eq 0 ]]; then
-     cp Configuration.h Configuration.h.bkp
-     cp Configuration_adv.h Configuration_adv.h.bkp
+     cp  machine_config.h  machine_config.h.bkp
+     cp  machine_config_adv.h machine_config_adv.h.bkp
   # restore
   else
-    mv Configuration.h.bkp Configuration.h
-    mv Configuration_adv.h.bkp Configuration_adv.h
+    mv  machine_config.h.bkp  machine_config.h
+    mv  machine_config_adv.h.bkp machine_config_adv.h
   fi
   cd -
 }
@@ -90,12 +90,12 @@ function build_marlin() {
    fw_file=".pio/build/FF_F407ZG/firmware.bin"
 
    cd "${MARLIN_SOURCE_DIR}/Marlin"
-   cp "${CONFIG_FOLDER}/Configuration-${PRINTER_TYPE}.h"  Configuration.h
-   cp "${CONFIG_FOLDER}/Configuration_adv-${PRINTER_TYPE}.h"  Configuration_adv.h
+   cp "${CONFIG_FOLDER}/Configuration-${PRINTER_TYPE}.h"  machine_config.h
+   cp "${CONFIG_FOLDER}/Configuration_adv-${PRINTER_TYPE}.h"  machine_config_adv.h
 
   if [ "${SWAP_EXTRUDER}" = true ]; then
      if [ "${PRINTER_TYPE}" == "inventor" ] || [ "${PRINTER_TYPE}" == "dreamer" ]; then
-      perl -i -pe 's/^\/\/#define FF_EXTRUDER_SWAP/#define FF_EXTRUDER_SWAP/' Configuration.h
+         cp "${CONFIG_FOLDER}/Configuration-${PRINTER_TYPE}-swap.h"  machine_config.h
     fi
   fi
 
