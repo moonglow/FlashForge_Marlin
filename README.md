@@ -4,10 +4,27 @@
 
 Current firmware is based on 2.0.7.2  
 
-## Building from source
+
+#### What works?
+
+- [x] TFT display ( ILI9488 and OTM4802 )
+- [x] Touch screen controller ( XPT2046 )
+- [x] Chamber and bed temperature sensors ( internal ADC )
+- [x] Extruder K-type thermocouple with external ADC ( ADS1118 )
+- [x] Chamber RGB light ( PCA9632 PWM controller )
+- [x] Stepper motor current setup ( MCP4018 digital potentiometer )
+- [x] Print cooling fan, chamber fan, endstops, stepper motor signals control
+- [x] External SD card
+- [x] USB ( virtual serial port )
+- [ ] Internal storage not available ( read [discussion](https://github.com/moonglow/FlashForge_Marlin/issues/3#issuecomment-813024193))
+
+#### Unsupported
+
+- [ ] WiFi  (read [discussion](https://github.com/moonglow/FlashForge_Marlin/issues/3#issuecomment-813024193))
+- [ ] Power-loss recovery not available for Dreamer & Dreamer Nx  (read [discussion](https://github.com/moonglow/FlashForge_Marlin/issues/5))
 
 
-
+Head on to the [wiki page](https://github.com/tckb/FlashForge_Marlin/wiki) to find more details on flashing the firmware, building from source etc. 
 
 ## Supported printers:
 
@@ -17,7 +34,7 @@ Current firmware is based on 2.0.7.2
 
 ## Credits
 
-- This repo is a fork of the excellent effort made by  [@moonglow](https://github.com/moonglow), consider supporting for his work.  
+- This repo is a fork of the excellent effort made by  [@moonglow](https://github.com/moonglow), consider supporting his work.  
 
 
 #### Disclaimer
