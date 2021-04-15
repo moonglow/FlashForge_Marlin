@@ -9,3 +9,4 @@
 #define Y_MAX_POS    75.00
 #define Y_MIN_POS   -75.00
 #define Z_MAX_POS 160
+#define POWER_LOSS_RECOVERY
