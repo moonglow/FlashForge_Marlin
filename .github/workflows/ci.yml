@@ -2,10 +2,10 @@ name: build-release
 
 on:
   push:
-    branches:
-    - release/*
+#    branches:
+#    - release/*
     tags:
-      - '*'
+      - 'test-*'
     
 jobs:
   build:
@@ -45,13 +45,15 @@ jobs:
          
       
       - name: Release  ${{ matrix.machine }}
-        uses: softprops/action-gh-release@v1
+        uses: docker://antonyurchenko/git-release:latest
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          body_path: ${{ matrix.machine }}-CHANGELOG.md
-          draft: false
-          prerelease: true
-          files: |
+          args: |
             ./BUILD/*.bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRAFT_RELEASE: "true"
+          PRE_RELEASE: "true"
+          CHANGELOG_FILE: "CHANGELOG.md"
+          ALLOW_EMPTY_CHANGELOG: "false"
+          ALLOW_TAG_PREFIX: "true"

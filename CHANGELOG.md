@@ -42,5 +42,5 @@ All notable changes to this project will be documented in this file.
 
 No significant changes
 
-[Unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.8.1...HEAD
+[Unreleased]: https://github.com/tckb/FlashForge_Marlin/compare/v0.8.1...HEAD
 
