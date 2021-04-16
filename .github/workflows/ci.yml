@@ -46,7 +46,7 @@ jobs:
       - name: Uploading binary ${{ matrix.machine }}
         uses: actions/upload-artifact@v2
         with:
-          name: binaries
+          name: assets
           path: ./BUILD/*.bin
 
       - name: Uploading Changelog
