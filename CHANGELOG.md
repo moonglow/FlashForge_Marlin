@@ -37,5 +37,5 @@ All notable changes to this project will be documented in this file.
 ## [0.7.1] - 2021-04-13
 No significant changes
 
-[Unreleased]: https://github.com/tckb/FlashForge_Marlin/compare/v0.8.1...HEAD
+[Unreleased]: https://github.com/tckb/FlashForge_Marlin/compare/v0.8.1...fork_main
 
