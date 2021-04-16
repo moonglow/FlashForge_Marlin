@@ -229,13 +229,13 @@ function generate_version() {
   current_version=$(git describe --tags --long)
   machine_name=""
 
-  if [ ${PRINTER_TYPE} -eq "dreamer_nx" ]; then
+  if [ ${PRINTER_TYPE} == "dreamer_nx" ]; then
       machine_name="Dreamer Nx"
   fi
-  if [ ${PRINTER_TYPE} -eq "dreamer" ]; then
+  if [ ${PRINTER_TYPE} == "dreamer" ]; then
       machine_name="Dreamer"
   fi
-  if [ ${PRINTER_TYPE} -eq "inventor" ]; then
+  if [ ${PRINTER_TYPE} == "inventor" ]; then
       machine_name="Inventor"
   fi
 
