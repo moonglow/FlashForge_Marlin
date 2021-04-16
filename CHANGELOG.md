@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.0.1] - 2021-04-16
+
+This is a DRILL
+
 ## [v0.8.1] - 2021-04-16
 
 ### Added
