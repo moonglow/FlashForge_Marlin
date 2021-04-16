@@ -42,18 +42,33 @@ jobs:
         run:  |
          platformio --version
          ./build_marlin.sh ${{ matrix.machine }}
-         
-      
-      - name: Release  ${{ matrix.machine }}
-        uses: docker://antonyurchenko/git-release:latest
-        if: startsWith(github.ref, 'refs/tags/')
+
+      - name: Uploading binary ${{ matrix.machine }}
+        uses: actions/upload-artifact@v2
         with:
-          args: |
-            ./BUILD/*.bin
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DRAFT_RELEASE: "true"
-          PRE_RELEASE: "true"
-          CHANGELOG_FILE: "CHANGELOG.md"
-          ALLOW_EMPTY_CHANGELOG: "false"
-          ALLOW_TAG_PREFIX: "true"
+          name: binaries
+          path: ./BUILD/*.bin
+
+
+  release:
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+        - name: Download release binaries
+          uses: actions/download-artifact@v2
+          with:
+            name: binaries
+
+        - name: Publish release
+          uses: docker://antonyurchenko/git-release:latest
+          if: startsWith(github.ref, 'refs/tags/')
+          with:
+            args: |
+              .*.bin
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            DRAFT_RELEASE: "true"
+            PRE_RELEASE: "true"
+            CHANGELOG_FILE: "CHANGELOG.md"
+            ALLOW_EMPTY_CHANGELOG: "false"
+            ALLOW_TAG_PREFIX: "true"
