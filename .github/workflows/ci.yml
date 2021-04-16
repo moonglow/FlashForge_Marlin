@@ -3,7 +3,7 @@ name: build-release
 on:
   push:
     branches:
-    - fork_main
+    - release/*
     tags:
       - '*'
 
@@ -71,22 +71,17 @@ jobs:
           with:
             name: log
 
-        - name: list files (debug)
-          run: |
-            ls
-            ls bin
 
-
-#        - name: Publish release
-#          uses: docker://antonyurchenko/git-release:latest
-#          if: startsWith(github.ref, 'refs/tags/')
-#          with:
-#            args: |
-#              bin/.*.bin
-#          env:
-#            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#            DRAFT_RELEASE: "false"
-#            PRE_RELEASE: "true"
-#            CHANGELOG_FILE: "CHANGELOG.md"
-#            ALLOW_EMPTY_CHANGELOG: "false"
-#            ALLOW_TAG_PREFIX: "true"
+        - name: Publish release
+          uses: docker://antonyurchenko/git-release:latest
+          if: startsWith(github.ref, 'refs/tags/')
+          with:
+            args: |
+              bin/*.bin
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            DRAFT_RELEASE: "false"
+            PRE_RELEASE: "true"
+            CHANGELOG_FILE: "CHANGELOG.md"
+            ALLOW_EMPTY_CHANGELOG: "false"
+            ALLOW_TAG_PREFIX: "true"
