@@ -149,7 +149,7 @@ BUILD_DIR=$PWD/BUILD
 CONFIG_FOLDER=$PWD/configs
 FINAL_FW="${BUILD_DIR}/${RELEASE_NAME}.bin"
 FLASHING_SCRIPT="$PWD/ff_flash_firmware.py"
-
+MARLIN_VERSION="2.0.7.2"
 # log levels
 ERROR=1
 if [ $_arg_verbose = on ]
@@ -211,22 +211,57 @@ function backup_restore_config(){
   if [[ $1 -eq 0 ]]; then
      cp  machine_config.h  machine_config.h.bkp
      cp  machine_config_adv.h machine_config_adv.h.bkp
+     cp  Version.h Version.h.bkp
   # restore
   else
     mv  machine_config.h.bkp  machine_config.h
     mv  machine_config_adv.h.bkp machine_config_adv.h
+    mv  Version.h.bkp Version.h
   fi
+}
+
+function generate_version() {
+  __msg_info "Generating version file"
+  cd ${BUILD_DIR}
+  touch Version.h
+
+  build_date=$(date +"%Y-%m-%d")
+  current_version=$(git describe --tags --long)
+  machine_name=""
+
+  if [ ${PRINTER_TYPE} -eq "dreamer_nx"]; then
+      machine_name="Dreamer Nx"
+  fi
+  if [ ${PRINTER_TYPE} -eq "dreamer"]; then
+      machine_name="Dreamer"
+  fi
+  if [ ${PRINTER_TYPE} -eq "inventor"]; then
+      machine_name="Inventor"
+  fi
+
+  echo "#pragma once" >> Version.h
+  echo \#define SHORT_BUILD_VERSION \"${MARLIN_VERSION}-${current_version}\" >> Version.h
+  echo '#define DETAILED_BUILD_VERSION  "SHORT_BUILD_VERSION"'>> Version.h
+  echo \#define STRING_DISTRIBUTION_DATE \"${build_date}\" >> Version.h
+  echo '#define SOURCE_CODE_URL "https://github.com/tckb/FlashForge_Marlin"' >> Version.h
+  echo '#define WEBSITE_URL "https://marlinfw.org"' >> Version.h
+  echo \#define MACHINE_NAME \"FlashForge ${machine_name}\" >> Version.h
+  echo \#define CUSTOM_MACHINE_NAME \"FlashForge ${machine_name}\" >> Version.h
 }
 
 function build_marlin() {
    __msg_info "Building Marlin firmware"
    backup_restore_config 0
+   generate_version
 
    fw_file="${MARLIN_SOURCE_DIR}/.pio/build/FF_F407ZG/firmware.bin"
 
    cd "${MARLIN_SOURCE_DIR}/Marlin"
    cp "${CONFIG_FOLDER}/Configuration-${PRINTER_TYPE}.h"  machine_config.h
    cp "${CONFIG_FOLDER}/Configuration_adv-${PRINTER_TYPE}.h"  machine_config_adv.h
+
+
+   cp ${BUILD_DIR}/Version.h Version.h
 
   if [ "${SWAP_EXTRUDER}" = true ]; then
      if [ "${PRINTER_TYPE}" == "inventor" ] || [ "${PRINTER_TYPE}" == "dreamer" ]; then
@@ -265,6 +300,7 @@ function cleanup() {
 
    rm -f firmware.bin
    rm -f ff_fw_tool
+   rm -f Version.h
 
    cd "${MARLIN_SOURCE_DIR}"
    platformio run --target clean -e FF_F407ZG --silent
@@ -289,6 +325,7 @@ function start_build_process() {
 function flash_firmware() {
   __msg_info "Flashing ${FINAL_FW}"
   ${FLASHING_SCRIPT} ${FINAL_FW}
+  __msg_info "Flashing completed.. Your printer will now reboot"
 }
 
 function main() {
