@@ -49,6 +49,12 @@ jobs:
           name: binaries
           path: ./BUILD/*.bin
 
+      - name: Uploading Changelog
+        uses: actions/upload-artifact@v2
+        with:
+          name: assets
+          path: CHANGELOG.md
+
 
   release:
       needs: build
@@ -57,7 +63,7 @@ jobs:
         - name: Download release binaries
           uses: actions/download-artifact@v2
           with:
-            name: binaries
+            name: assets
 
         - name: Publish release
           uses: docker://antonyurchenko/git-release:latest
