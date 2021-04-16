@@ -1,4 +1,4 @@
-###  Dreamer Firmware Change Log
+###  Dreamer NX Firmware Change Log
 
 (+) Print time Enhancements
 - Printer should now show the remaining time/elapsed time

@@ -1,4 +1,4 @@
-###  Dreamer Firmware Change Log
+###  Inventor Firmware Change Log
 
 (+) Print time Enhancements
 - Printer should now show the remaining time/elapsed time
