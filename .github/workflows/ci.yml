@@ -73,7 +73,7 @@ jobs:
               .*.bin
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            DRAFT_RELEASE: "true"
+            DRAFT_RELEASE: "false"
             PRE_RELEASE: "true"
             CHANGELOG_FILE: "CHANGELOG.md"
             ALLOW_EMPTY_CHANGELOG: "false"
