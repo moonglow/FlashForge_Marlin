@@ -3,10 +3,10 @@ name: build-release
 on:
   push:
     branches:
-    - release/*
+    - fork_main
     tags:
       - '*'
-    
+
 jobs:
   build:
      strategy:
@@ -64,22 +64,29 @@ jobs:
           uses: actions/download-artifact@v2
           with:
             name: binaries
+            path: bin
 
         - name: Download changelog
           uses: actions/download-artifact@v2
           with:
             name: log
 
-        - name: Publish release
-          uses: docker://antonyurchenko/git-release:latest
-          if: startsWith(github.ref, 'refs/tags/')
-          with:
-            args: |
-              ./.*.bin
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            DRAFT_RELEASE: "false"
-            PRE_RELEASE: "true"
-            CHANGELOG_FILE: "CHANGELOG.md"
-            ALLOW_EMPTY_CHANGELOG: "false"
-            ALLOW_TAG_PREFIX: "true"
+        - name: list files (debug)
+          run: |
+            ls
+            ls bin
+
+
+#        - name: Publish release
+#          uses: docker://antonyurchenko/git-release:latest
+#          if: startsWith(github.ref, 'refs/tags/')
+#          with:
+#            args: |
+#              bin/.*.bin
+#          env:
+#            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#            DRAFT_RELEASE: "false"
+#            PRE_RELEASE: "true"
+#            CHANGELOG_FILE: "CHANGELOG.md"
+#            ALLOW_EMPTY_CHANGELOG: "false"
+#            ALLOW_TAG_PREFIX: "true"

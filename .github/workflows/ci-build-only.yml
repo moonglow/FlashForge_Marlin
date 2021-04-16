@@ -3,7 +3,7 @@ name: build
 on:
   push:
     branches:
-    - fork_main
+    - release/*
     
 jobs:
   build:
