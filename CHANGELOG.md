@@ -3,11 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [v0.0.1] - 2021-04-16
+## [0.0.1] - 2021-04-16
 
 This is a DRILL
 
-## [v0.8.1] - 2021-04-16
+## [0.8.1] - 2021-04-16
 
 ### Added
 
@@ -34,7 +34,7 @@ This is a DRILL
 - Updated Nozzle park position (G27) to 'Back Right' co-ordinates
     - current position is (X_MAX_POS - 10), (Y_MAX_POS - 10)
 
-## [v0.8] - 2021-04-14
+## [0.8] - 2021-04-14
 
 ### Added
 
@@ -42,7 +42,7 @@ This is a DRILL
     - added scrolling status when there's long status is shown
     - enabled support to show progress (M73) so that it can be used in Octoprint
 
-## [v0.7.1] - 2021-04-13
+## [0.7.1] - 2021-04-13
 
 No significant changes
 
