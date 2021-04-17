@@ -30,8 +30,8 @@ Head on to the [wiki page](https://github.com/tckb/FlashForge_Marlin/wiki) to fi
 ## Supported printers:
 
 - DreamerNX
-- Dreamer
-- Inventor
+- Dreamer (Untested)
+- Inventor (Untested)
 
 ## Credits
 
