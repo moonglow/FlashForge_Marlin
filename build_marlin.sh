@@ -229,15 +229,21 @@ function generate_version() {
   current_version=$(git describe --tags --long)
   machine_name=""
 
-  if [ ${PRINTER_TYPE} == "dreamer_nx" ]; then
-      machine_name="Dreamer Nx"
-  fi
-  if [ ${PRINTER_TYPE} == "dreamer" ]; then
-      machine_name="Dreamer"
-  fi
-  if [ ${PRINTER_TYPE} == "inventor" ]; then
-      machine_name="Inventor"
-  fi
+  case "${PRINTER_TYPE}" in
+    dreamer_nx)
+       machine_name="Dreamer Nx"
+       ;;
+    dreamer)
+        machine_name="Dreamer"
+        ;;
+    inventor)
+        machine_name="Inventor"
+        ;;
+    *)
+      __msg_error Unknown or unsupported machine, only dreamer, dreamer_nx & inventor are supported
+        exit 1
+        ;;
+  esac
 
   echo "#pragma once" >> Version.h
   echo \#define SHORT_BUILD_VERSION \"${MARLIN_VERSION}-${current_version}\" >> Version.h
@@ -325,7 +331,6 @@ function start_build_process() {
 function flash_firmware() {
   __msg_info "Flashing ${FINAL_FW}"
   ${FLASHING_SCRIPT} ${FINAL_FW}
-  __msg_info "Flashing completed.. Your printer will now reboot"
 }
 
 function main() {

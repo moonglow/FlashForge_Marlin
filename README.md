@@ -27,6 +27,15 @@ Current firmware is based on 2.0.7.2
 
 Head on to the [wiki page](https://github.com/tckb/FlashForge_Marlin/wiki) to find more details on flashing the firmware, building from source etc. 
 
+
+## Supported platforms:
+ 
+The scripts are written to work well with the following platforms -
+
+ - macOS
+ - GNU/Linux
+
+
 ## Supported printers:
 
 - DreamerNX
