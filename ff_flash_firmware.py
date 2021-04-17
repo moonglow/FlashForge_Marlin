@@ -112,3 +112,5 @@ ret = printer.read(BULK_IN_ENDPOINT_ADDR, 1000)
 print(to_string(ret.tobytes()))
 ret = printer.read(BULK_IN_ENDPOINT_ADDR, 1000)
 print(to_string(ret.tobytes()))
+
+print('Flashing Completed, your printer will now reboot to the new firmware!')
