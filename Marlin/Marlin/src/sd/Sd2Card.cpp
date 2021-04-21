@@ -90,6 +90,12 @@
 // Send command and return error code. Return zero for OK
 uint8_t Sd2Card::cardCommand(const uint8_t cmd, const uint32_t arg) {
   // Select card
+#if ENABLED( FF_FLASHAIR_FIX )
+  if( cmd != CMD12 )
+  {
+    chipDeselect();
+  }
+#endif
   chipSelect();
 
   // Wait up to 300 ms if busy
@@ -274,22 +280,15 @@ bool Sd2Card::init(const uint8_t sckRateID, const pin_t chipSelectPin) {
       goto FAIL;
     }
   }
-#if ENABLED( FF_FLASHAIR_FIX )
-  chipDeselect();
-#endif
+
   #if ENABLED(SD_CHECK_AND_RETRY)
     crcSupported = (cardCommand(CMD59, 1) == R1_IDLE_STATE);
-#if ENABLED( FF_FLASHAIR_FIX )
-  chipDeselect();
-#endif
   #endif
+
   watchdog_refresh(); // In case init takes too long
 
   // check SD version
   for (;;) {
-#if ENABLED( FF_FLASHAIR_FIX )
-  chipDeselect();
-#endif
     if (cardCommand(CMD8, 0x1AA) == (R1_ILLEGAL_COMMAND | R1_IDLE_STATE)) {
       type(SD_CARD_TYPE_SD1);
       break;
@@ -308,10 +307,8 @@ bool Sd2Card::init(const uint8_t sckRateID, const pin_t chipSelectPin) {
     }
   }
 
-#if ENABLED( FF_FLASHAIR_FIX )
-  chipDeselect();
-#endif
   watchdog_refresh(); // In case init takes too long
+
   // Initialize card and send host supports SDHC if SD2
   arg = type() == SD_CARD_TYPE_SD2 ? 0x40000000 : 0;
   while ((status_ = cardAcmd(ACMD41, arg)) != R1_READY_STATE) {
@@ -320,13 +317,7 @@ bool Sd2Card::init(const uint8_t sckRateID, const pin_t chipSelectPin) {
       error(SD_CARD_ERROR_ACMD41);
       goto FAIL;
     }
-#if ENABLED( FF_FLASHAIR_FIX )
-  chipDeselect();
-#endif
   }
-#if ENABLED( FF_FLASHAIR_FIX )
-  chipDeselect();
-#endif
   // If SD2 read OCR register to check for SDHC card
   if (type() == SD_CARD_TYPE_SD2) {
     if (cardCommand(CMD58, 0)) {
@@ -338,7 +329,7 @@ bool Sd2Card::init(const uint8_t sckRateID, const pin_t chipSelectPin) {
     LOOP_L_N(i, 3) spiRec();
   }
   chipDeselect();
-  
+
   return setSckRate(sckRateID);
 
   FAIL:

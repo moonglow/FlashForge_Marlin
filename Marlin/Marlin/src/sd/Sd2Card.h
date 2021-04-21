@@ -172,7 +172,6 @@ private:
   // private functions
   inline uint8_t cardAcmd(const uint8_t cmd, const uint32_t arg) {
     cardCommand(CMD55, 0);
-    chipDeselect();
     return cardCommand(cmd, arg);
   }
   uint8_t cardCommand(const uint8_t cmd, const uint32_t arg);
