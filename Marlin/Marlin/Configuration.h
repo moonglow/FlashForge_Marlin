@@ -27,7 +27,7 @@
 #define FF_FLASHAIR_FIX
 //#define FF_INVENTOR_MACHINE
 //#define FF_DREAMER_MACHINE
-#define FF_DREAMER_NX_MACHINE
+//#define FF_DREAMER_NX_MACHINE
 //#define FF_EXTRUDER_SWAP
 
 #if NONE(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE) && ENABLED( FF_EXTRUDER_SWAP )
@@ -1417,7 +1417,7 @@
   #define LEVEL_CORNERS_INSET_LFRB { 30, 30, 30, 30 } // (mm) Left, Front, Right, Back insets
 #endif
   #define LEVEL_CORNERS_HEIGHT      0.0   // (mm) Z height of nozzle at leveling points
-  #define LEVEL_CORNERS_Z_HOP       4.0   // (mm) Z height of nozzle between leveling points
+  #define LEVEL_CORNERS_Z_HOP       5.0   // (mm) Z height of nozzle between leveling points
   #define LEVEL_CENTER_TOO              // Move to the center after the last corner
 #endif
 
@@ -2287,7 +2287,7 @@
 #define TFT_INTERFACE_FSMC
 #define GRAPHICAL_TFT_UPSCALE     4
 /* from FF firmware: ILI9488, OTM4802 */
-//#define DELAYED_BACKLIGHT_INIT
+#define DELAYED_BACKLIGHT_INIT
 #define USE_FLASHFORGE_TFT
 #define TFT_DEFAULT_ORIENTATION   (TFT_EXCHANGE_XY)
 #define TFT_DRIVER                AUTO

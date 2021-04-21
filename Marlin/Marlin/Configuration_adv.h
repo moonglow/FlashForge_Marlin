@@ -1126,7 +1126,7 @@
 #endif // HAS_LCD_MENU
 
 // Scroll a longer status message into view
-//#define STATUS_MESSAGE_SCROLLING
+#define STATUS_MESSAGE_SCROLLING
 
 // On the Info Screen, display XY with one decimal place when possible
 //#define LCD_DECIMAL_SMALL_XY
@@ -1660,7 +1660,7 @@
  *
  * See https://marlinfw.org/docs/features/lin_advance.html for full instructions.
  */
-#define LIN_ADVANCE
+//#define LIN_ADVANCE
 #if ENABLED(LIN_ADVANCE)
   //#define EXTRA_LIN_ADVANCE_K // Enable for second linear advance constants
   #define LIN_ADVANCE_K         0.00   // Unit: mm compression per 1mm/s extruder speed
@@ -3236,19 +3236,20 @@
  */
 #define CUSTOM_USER_MENUS
 #if ENABLED(CUSTOM_USER_MENUS)
-  #define CUSTOM_USER_MENU_TITLE "Rear Case"
+  #define CUSTOM_USER_MENU_TITLE "User menu"
   //#define USER_SCRIPT_DONE "M117 User Script Done"
   #define USER_SCRIPT_AUDIBLE_FEEDBACK
   #define USER_SCRIPT_RETURN  // Return to status screen after a script
 
-  #define USER_DESC_1   "Enable Rear Case Fan"
+  #define USER_DESC_1   "Enable case fan"
   #define USER_GCODE_1  "M141 S45"
 
-  #define USER_DESC_2   "Disable Rear Case Fan"
+  #define USER_DESC_2   "Disable case fan"
   #define USER_GCODE_2  "M141 S0"
 
-  //#define USER_DESC_1 "Home & UBL Info"
-  //#define USER_GCODE_1 "G28\nG29 W"
+  #define USER_DESC_3 "Bed leveling (3-point)"
+  #include "BedLevelingScript.h"
+
 
   //#define USER_DESC_2 "Preheat for " PREHEAT_1_LABEL
   //#define USER_GCODE_2 "M140 S" STRINGIFY(PREHEAT_1_TEMP_BED) "\nM104 S" STRINGIFY(PREHEAT_1_TEMP_HOTEND)
