@@ -161,7 +161,7 @@ static int ads1118_it_to_c( uint16_t raw )
   raw >>= 2;
   /* negative unsupported */
   if( raw & 0x2000 )
-    return 0;
+    return 25000;
   /* LSB: 0.03125 */
   return ( raw*3125 ) / 100;
 }
