@@ -22,5 +22,9 @@
 - Dreamer
 - Inventor
 
+#### Installation guide:
+- [Installing Marlin ( Windows )](https://github.com/moonglow/FlashForge_Marlin/wiki/Windows-instalation-guide)
+- [Installing Marlin ( Linux )](https://github.com/moonglow/FlashForge_Marlin/wiki/Linux-instalation-guide)
+
 #### Support me
 <a href="https://www.buymeacoffee.com/moonglow" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" height="41" width="174"></a>
