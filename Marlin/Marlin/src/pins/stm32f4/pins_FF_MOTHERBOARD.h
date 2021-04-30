@@ -95,6 +95,12 @@ thermosensor K-couple ADS1118
 /* PIN is OK, but removed for test purpose */
 #define TFT_RESET_PIN                     PD13
 
+#if ENABLED( FSMC_GRAPHICAL_TFT )
+  #define FSMC_CS_PIN                       PD7   /* NE1 */
+  #define FSMC_RS_PIN                       PD11  /* RS -> A0 */               
+  //#define LCD_RESET_PIN                     PD13
+#endif
+
 // Ignore temp readings during development.
 //#define BOGUS_TEMPERATURE_GRACE_PERIOD    2000
 
@@ -210,3 +216,7 @@ thermosensor K-couple ADS1118
 
 /* filament runout */
 #define FIL_RUNOUT_PIN                      -1
+
+
+/* Servo pin for BLTouch */
+#define SERVO0_PIN                         -1

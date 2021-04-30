@@ -19,6 +19,7 @@ function usage()
      -m           machine name ( nx/dreamer/inventor )
      -s           swap extruders ( for dreamer and inventor machines )
      -l           enable linear advance ( pressure control algo )
+     -u           old style GUI
      -v           verbose build
      
    example:
@@ -49,12 +50,13 @@ then
    fi
 fi
 
-while getopts "m:slhv" opt
+while getopts "m:slhvu" opt
 do
    case "$opt" in
       m ) machine="$OPTARG" ;;
       s ) flags+="-DFF_EXTRUDER_SWAP " ;;
       l ) flags+="-DLIN_ADVANCE " ;;
+      u ) flags+="-DUSE_OLD_MARLIN_UI " ;;
       v ) build_silent="" ;;
       ? | h ) usage; exit ;;
    esac

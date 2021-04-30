@@ -885,7 +885,11 @@
  *      - normally-closed switches to GND and D32.
  *      - normally-open switches to 5V and D32.
  */
-//#define Z_MIN_PROBE_PIN 32 // Pin 32 is the RAMPS default
+#if ANY(FF_DREAMER_MACHINE, FF_DREAMER_NX_MACHINE)
+#define Z_MIN_PROBE_PIN Z_MAX_PIN
+#else
+#define Z_MIN_PROBE_PIN Z_MIN_PIN /* Inventor */
+#endif
 
 /**
  * Probe Type
@@ -2280,16 +2284,23 @@
 // Mandatory for SPI screens with no MISO line
 // Available drivers are: ST7735, ST7789, ST7796, R61505, ILI9328, ILI9341, ILI9488
 //
+#if ENABLED( USE_OLD_MARLIN_UI )
+#define FSMC_GRAPHICAL_TFT
+#define HAS_TFT_XPT2046           1 
+#define GRAPHICAL_TFT_UPSCALE     3
+#define TFT_WIDTH                 480
+#define TFT_HEIGHT                320
+#else
 #define TFT_COLOR_UI
-#define TFT_INTERFACE_FSMC
+#define GRAPHICAL_TFT_UPSCALE     3
 #define TFT_WIDTH                 480
 #define TFT_HEIGHT                320
 #define TFT_INTERFACE_FSMC
-#define GRAPHICAL_TFT_UPSCALE     4
+#define TFT_DEFAULT_ORIENTATION   (TFT_EXCHANGE_XY)
+#endif
 /* from FF firmware: ILI9488, OTM4802 */
 #define DELAYED_BACKLIGHT_INIT
 #define USE_FLASHFORGE_TFT
-#define TFT_DEFAULT_ORIENTATION   (TFT_EXCHANGE_XY)
 #define TFT_DRIVER                AUTO
 #define TFT_COLOR                 TFT_COLOR_RGB
 
@@ -2333,11 +2344,17 @@
   #define BUTTON_DELAY_MENU       250 // (ms) Button repeat delay for menus
 
   #define TOUCH_SCREEN_CALIBRATION
-
+#if ENABLED( FSMC_GRAPHICAL_TFT )
+  #define XPT2046_X_CALIBRATION    12013
+  #define XPT2046_Y_CALIBRATION    -8711
+  #define XPT2046_X_OFFSET         -32
+  #define XPT2046_Y_OFFSET         256
+#else
   #define XPT2046_X_CALIBRATION   17114
   #define XPT2046_Y_CALIBRATION   -12430
   #define XPT2046_X_OFFSET        -24
   #define XPT2046_Y_OFFSET        345
+#endif
 #endif
 
 //
