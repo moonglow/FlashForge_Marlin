@@ -23,10 +23,21 @@ static bool spi_is_busy( void )
   return __IS_DMA_ENABLED( &ads1118_dma_tx );
 }
 
+static uint16_t spi_transfer_io( uint16_t data )
+{
+  __HAL_SPI_ENABLE( &ads1118_spi );
+  while ((ads1118_spi.Instance->SR & SPI_FLAG_TXE) != SPI_FLAG_TXE);
+  ads1118_spi.Instance->DR = data;
+  while ((ads1118_spi.Instance->SR & SPI_FLAG_RXNE) != SPI_FLAG_RXNE);
+  data = ads1118_spi.Instance->DR;
+  __HAL_SPI_DISABLE( &ads1118_spi );
+
+  return data;
+}
+
 static inline void spi_transfer_begin( void )
 {
-  HAL_SPI_Init( &ads1118_spi ); 
-
+  HAL_SPI_Init( &ads1118_spi );
   WRITE( ADS1118_CS_PIN, LOW );
 };
 
@@ -35,19 +46,9 @@ static inline void spi_transfer_end( void )
   WRITE( ADS1118_CS_PIN, HIGH );
 };
 
-static uint16_t spi_transfer_io( uint16_t data )
-{
-  __HAL_SPI_ENABLE( &ads1118_spi );
-  while ((ads1118_spi.Instance->SR & SPI_FLAG_TXE) != SPI_FLAG_TXE);
-  ads1118_spi.Instance->DR = data;
-  while ((ads1118_spi.Instance->SR & SPI_FLAG_RXNE) != SPI_FLAG_RXNE);
-  __HAL_SPI_DISABLE( &ads1118_spi );
-
-  return ads1118_spi.Instance->DR;
-}
-
 #define ENABLE_PULL_UP      (1<<3)
-#define ENABLE_SINGLE_SHOT  (1<<15)
+#define START_SINGLE_SHOT   ((1<<15) | (1<<8))
+#define CFG_READBACK_MASK   (0x7FFE)
 
 /* 64 SPS = ~ 16ms, ±0.256V */
 #define CHANNEL_1_CFG   ( 0x0C62 | ENABLE_PULL_UP )
@@ -56,8 +57,6 @@ static uint16_t spi_transfer_io( uint16_t data )
 
 #define MAX_CHANNELS    (2)
 #define USE_POLLING     0
-
-#define SPI_DATA_SIZE SPI_DATASIZE_16BIT
 
 void ads1118_init( void )
 {
@@ -92,7 +91,7 @@ void ads1118_init( void )
   ads1118_spi.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_64;
   ads1118_spi.Init.CLKPhase           = SPI_PHASE_2EDGE;
   ads1118_spi.Init.CLKPolarity        = SPI_POLARITY_LOW;
-  ads1118_spi.Init.DataSize           = SPI_DATA_SIZE;
+  ads1118_spi.Init.DataSize           = SPI_DATASIZE_16BIT;
   ads1118_spi.Init.FirstBit           = SPI_FIRSTBIT_MSB;
   ads1118_spi.Init.TIMode             = SPI_TIMODE_DISABLE;
   ads1118_spi.Init.CRCCalculation     = SPI_CRCCALCULATION_DISABLE;
@@ -106,7 +105,7 @@ void ads1118_init( void )
     if( ads1118_spi.Instance == SPI1 )
     {
       __HAL_RCC_SPI1_CLK_ENABLE();
-      ads1118_spi.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_64;
+      ads1118_spi.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_128;
       #ifdef STM32F1xx
         ads1118_dma_tx.Instance = DMA1_Channel3;
       #elif defined(STM32F4xx)
@@ -122,35 +121,36 @@ void ads1118_init( void )
 
 static int ads1118_read_adc( uint16_t config, int eoc )
 {
-  uint16_t result;
+  uint16_t result, updated_cfg;
  
   spi_transfer_begin();
 
   if( eoc )
   {
-    uint8_t pattern = 0;
+    result = 0;
     /* debounce a little... for end of conversion signal */
-    pattern |= ( READ( ADS1118_MISO_PIN ) == LOW ) ? (1<<0):0;
-    pattern |= ( READ( ADS1118_MISO_PIN ) == LOW ) ? (1<<1):0;
-    pattern |= ( READ( ADS1118_MISO_PIN ) == LOW ) ? (1<<2):0;
-    pattern |= ( READ( ADS1118_MISO_PIN ) == LOW ) ? (1<<3):0;
-    if( pattern != 0x0F )
+    for( int  i = 0; i < 16; i++ )
+    {
+      result<<=1;
+      if( READ( ADS1118_MISO_PIN ) == LOW )
+        result |= 0x01;
+    }
+    if( result != 0xFFFF )
     {
       spi_transfer_end();
+  		spi_transfer_io( 0xFFFF );
       return -1;
     }
   }
 
-#if SPI_DATA_SIZE == SPI_DATASIZE_8BIT
-  result = spi_transfer_io( config>>8 );
-	result = ( result << 8 ) | spi_transfer_io( config&0xFF );
-  (void)spi_transfer_io( 0xFF );
-  (void)spi_transfer_io( 0xFF );
-#else
   result = spi_transfer_io( config );
-  (void)spi_transfer_io( config );
-#endif
+  updated_cfg = spi_transfer_io( config ) & CFG_READBACK_MASK;
+
   spi_transfer_end();
+  spi_transfer_io( 0xFFFF );
+
+  /*  check if new config accepted */
+  (void)( updated_cfg != ( config & CFG_READBACK_MASK ) );
 
   return result;
 }
@@ -202,7 +202,8 @@ int ads1118_read_raw( int ch_id )
     return shadow_data[ch_id];
 
 #if ( USE_POLLING == 0 )
-  if( (millis()-delay_ms) < 16u )
+  /* 64 SPS, (15.625 + 10% + 0.020) ms */
+  if( (millis()-delay_ms) < 18u )
     return shadow_data[ch_id];
 #endif
 
@@ -212,18 +213,18 @@ int ads1118_read_raw( int ch_id )
       read_fsm = 0;
     break;
     case 0:
-      (void)ads1118_read_adc( INTERNAL_T | ENABLE_SINGLE_SHOT, 0 );
+      (void)ads1118_read_adc( INTERNAL_T | START_SINGLE_SHOT, 0 );
       read_fsm = 1;
       break;
     case 1:
-      res = ads1118_read_adc( CHANNEL_1_CFG | ENABLE_SINGLE_SHOT, USE_POLLING );
+      res = ads1118_read_adc( CHANNEL_1_CFG | START_SINGLE_SHOT, USE_POLLING );
       if( res < 0 )
         break;
       raw_it = ads1118_it_to_c( res & 0xFFFF );
       read_fsm = 2;
       break;
     case 2:
-      res = ads1118_read_adc( INTERNAL_T | ENABLE_SINGLE_SHOT, USE_POLLING );
+      res = ads1118_read_adc( CHANNEL_2_CFG | START_SINGLE_SHOT, USE_POLLING );
       if( res < 0 )
         break;
       raw_ch = ads1118_adc_to_uv( res & 0xFFFF );
@@ -231,15 +232,7 @@ int ads1118_read_raw( int ch_id )
       read_fsm = 3;
       break;
     case 3:
-      res = ads1118_read_adc( CHANNEL_2_CFG | ENABLE_SINGLE_SHOT, USE_POLLING );
-      if( res < 0 )
-        break;
-      /* read internal temp */
-      raw_it = ads1118_it_to_c( res & 0xFFFF );
-      read_fsm = 4;
-      break;
-    case 4:
-      res = ads1118_read_adc( INTERNAL_T | ENABLE_SINGLE_SHOT, USE_POLLING );
+      res = ads1118_read_adc( INTERNAL_T | START_SINGLE_SHOT, USE_POLLING );
       if( res < 0 )
         break;
       raw_ch = ads1118_adc_to_uv( res & 0xFFFF );
