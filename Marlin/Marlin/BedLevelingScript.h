@@ -1,4 +1,5 @@
-#if ANY(FF_INVENTOR_MACHINE,FF_DREAMER_MACHINE)
+#if ENABLED( FF_EXTRUDER_SWAP )
+#if ENABLED( FF_DREAMER_MACHINE )
   #define USER_GCODE_3 \
 "G90\n"\
 "M117 Bed leveling started\n"\
@@ -25,6 +26,33 @@
 "M0 Press to finish\n"\
 "M117 Leveling done\n"\
 "M84"
+#elif ENABLED( FF_INVENTOR_MACHINE )
+  #define USER_GCODE_3 \
+"G90\n"\
+"M117 Bed leveling started\n"\
+"G28\n"\
+"M117 Moving to next point\n"\
+"G1 X-17 Y-60 F3300\n"\
+"G1 Z0 F840\n"\
+"M0 Adjust the screw and press to continue\n"\
+"M117 Moving to next point\n"\
+"G1 Z5 F420\n"\
+"G1 X-87 Y55 F3300\n"\
+"G1 Z0 F420\n"\
+"M0 Adjust the screw and press to continue\n"\
+"M117 Moving to next point\n"\
+"G1 Z5 F420\n"\
+"G1 X53 Y55 F3300\n"\
+"G1 Z0 F420\n"\
+"M0 Adjust the screw and press to continue\n"\
+"M117 Moving to next point\n"\
+"G1 Z5 F420\n"\
+"G1 X-17 Y0 F3300\n"\
+"G1 Z0 F420\n"\
+"M0 Press to finish\n"\
+"M117 Leveling done\n"\
+"M84"
+#endif
 #else
 /* original script for FlashForge NX/Dreamer/Inventor/ */
   #define USER_GCODE_3 \
