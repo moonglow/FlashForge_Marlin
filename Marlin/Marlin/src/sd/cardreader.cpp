@@ -453,8 +453,17 @@ void CardReader::manage_media() {
     DEBUG_ECHOLNPGM("SD: No UI Detected.");
 }
 
+/**
+ * "Release" the media by clearing the 'mounted' flag.
+ * Used by M22, "Release Media", manage_media.
+ */
 void CardReader::release() {
-  endFilePrint();
+  // Card removed while printing? Abort!
+  if (IS_SD_PRINTING())
+    card.flag.abort_sd_printing = true;
+  else
+    endFilePrint();
+
   flag.mounted = false;
   flag.workDirIsRoot = true;
   #if ALL(SDCARD_SORT_ALPHA, SDSORT_USES_RAM, SDSORT_CACHE_NAMES)
@@ -462,6 +471,10 @@ void CardReader::release() {
   #endif
 }
 
+/**
+ * Open a G-code file and set Marlin to start processing it.
+ * Enqueues M23 and M24 commands to initiate a media print.
+ */
 void CardReader::openAndPrintFile(const char *name) {
   char cmd[4 + strlen(name) + 1]; // Room for "M23 ", filename, and null
   extern const char M23_STR[];
@@ -471,6 +484,12 @@ void CardReader::openAndPrintFile(const char *name) {
   queue.enqueue_now_P(M24_STR);
 }
 
+/**
+ * Start or resume a media print by setting the sdprinting flag.
+ * The file browser pre-sort is also purged to free up memory,
+ * since you cannot browse files during active printing.
+ * Used by M24 and anywhere Start / Resume applies.
+ */
 void CardReader::startFileprint() {
   if (isMounted()) {
     flag.sdprinting = true;
@@ -478,6 +497,9 @@ void CardReader::startFileprint() {
   }
 }
 
+//
+// Run tasks upon finishing or aborting a file print.
+//
 void CardReader::endFilePrint(TERN_(SD_RESORT, const bool re_sort/*=false*/)) {
   TERN_(ADVANCED_PAUSE_FEATURE, did_pause_print = 0);
   TERN_(DWIN_CREALITY_LCD, HMI_flag.print_finish = flag.sdprinting);
@@ -635,14 +657,24 @@ void CardReader::openFileWrite(char * const path) {
 //
 bool CardReader::fileExists(const char * const path) {
   if (!isMounted()) return false;
+
+  DEBUG_ECHOLNPAIR("fileExists: ", path);
+
+  // Dive to the file's directory and get the base name
   SdFile *diveDir = nullptr;
   const char * const fname = diveToFile(false, diveDir, path);
-  if (fname) {
-    diveDir->rewind();
-    selectByName(*diveDir, fname);
-    diveDir->close();
-  }
-  return fname != nullptr;
+  if (!fname) return false;
+
+  // Get the longname of the checked file
+  //diveDir->rewind();
+  //selectByName(*diveDir, fname);
+  //diveDir->close();
+
+  // Try to open the file and return the result
+  SdFile tmpFile;
+  const bool success = tmpFile.open(diveDir, fname, O_READ);
+  if (success) tmpFile.close();
+  return success;
 }
 
 //
@@ -1206,7 +1238,7 @@ void CardReader::fileHasFinished() {
     if (!isMounted()) return;
     if (recovery.file.isOpen()) return;
     if (!recovery.file.open(&root, recovery.filename, read ? O_READ : O_CREAT | O_WRITE | O_TRUNC | O_SYNC))
-      SERIAL_ECHOLNPAIR(STR_SD_OPEN_FILE_FAIL, recovery.filename, ".");
+      openFailed(recovery.filename);
     else if (!read)
       echo_write_to_file(recovery.filename);
   }
