@@ -1052,14 +1052,6 @@ void Temperature::manage_heater() {
       if (temp_hotend[1].celsius > _MIN(HEATER_1_MAXTEMP, HEATER_1_MAX6675_TMAX - 1.0)) max_temp_error(H_E1);
       if (temp_hotend[1].celsius < _MAX(HEATER_1_MINTEMP, HEATER_1_MAX6675_TMIN + .01)) min_temp_error(H_E1);
     #endif
-    #if ENABLED(HEATER_0_USES_ADS1118)
-      if (temp_hotend[0].celsius > _MIN(HEATER_0_MAXTEMP, HEATER_0_ADS1118_TMAX - 1.0)) max_temp_error(H_E0);
-      if (temp_hotend[0].celsius < _MAX(HEATER_0_MINTEMP, HEATER_0_ADS1118_TMIN + .01)) min_temp_error(H_E0);
-    #endif
-    #if ENABLED(HEATER_1_USES_ADS1118)
-      if (temp_hotend[1].celsius > _MIN(HEATER_1_MAXTEMP, HEATER_1_ADS1118_TMAX - 1.0)) max_temp_error(H_E1);
-      if (temp_hotend[1].celsius < _MAX(HEATER_1_MINTEMP, HEATER_1_ADS1118_TMIN + .01)) min_temp_error(H_E1);
-    #endif
   #endif
 
   millis_t ms = millis();
@@ -2408,19 +2400,8 @@ void Temperature::readings_ready() {
   TERN_(HAS_JOY_ADC_Y, joystick.y.reset());
   TERN_(HAS_JOY_ADC_Z, joystick.z.reset());
 
+#if DISABLED( HAS_SPI_ADS1118 )
   #if HAS_HOTEND
-    #if ENABLED(HAS_SPI_ADS1118)
-    static constexpr int8_t temp_dir[] = {
-      TERN(HEATER_0_USES_ADS1118, 0, TEMPDIR(0))
-      #if HAS_MULTI_HOTEND
-        , TERN(HEATER_1_USES_ADS1118, 0, TEMPDIR(1))
-        #if HOTENDS > 2
-          #define _TEMPDIR(N) , TEMPDIR(N)
-          REPEAT_S(2, HOTENDS, _TEMPDIR)
-        #endif
-      #endif
-    };
-    #else
     static constexpr int8_t temp_dir[] = {
       TERN(HEATER_0_USES_MAX6675, 0, TEMPDIR(0))
       #if HAS_MULTI_HOTEND
@@ -2431,7 +2412,6 @@ void Temperature::readings_ready() {
         #endif
       #endif
     };
-    #endif
 
     LOOP_L_N(e, COUNT(temp_dir)) {
       const int8_t tdir = temp_dir[e];
@@ -2453,8 +2433,8 @@ void Temperature::readings_ready() {
         #endif
       }
     }
-
   #endif // HAS_HOTEND
+#endif
 
   #if HAS_HEATED_BED
     #if TEMPDIR(BED) < 0
