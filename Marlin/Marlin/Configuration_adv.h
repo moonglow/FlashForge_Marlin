@@ -1656,8 +1656,9 @@
 //
 #if ANY(DOGLCD, TFT_COLOR_UI, TOUCH_UI_FTDI_EVE)
 #if ENABLED( USE_OLD_MARLIN_UI )
-  #define LCD_LANGUAGE_2 en
-  #define LCD_LANGUAGE_3 fi
+  /* TODO: need to fix russian language */
+  //#define LCD_LANGUAGE_2 fi
+  //#define LCD_LANGUAGE_3 ru
 #else
   #define LCD_LANGUAGE_2 ru
 #endif
