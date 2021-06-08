@@ -216,8 +216,10 @@ WEAK void SystemClock_Config(void)
   /* PB12 - CS WIFI */
   HAL_GPIO_WritePin( GPIOB, GPIO_PIN_12, GPIO_PIN_SET );
 
+#ifdef USE_MKS_UI
   /* PB11 - WIFI MODULE POWER */
   HAL_GPIO_WritePin( GPIOB, GPIO_PIN_11, GPIO_PIN_RESET );
+#endif
 
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
@@ -229,9 +231,11 @@ WEAK void SystemClock_Config(void)
   GPIO_InitStruct.Pin = GPIO_PIN_12;
   HAL_GPIO_Init( GPIOB, &GPIO_InitStruct );
 
+#ifdef USE_MKS_UI
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Pin = GPIO_PIN_11;
   HAL_GPIO_Init( GPIOB, &GPIO_InitStruct );
+#endif
 
   /* enable DWT counter */
   CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;

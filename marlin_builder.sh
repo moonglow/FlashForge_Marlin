@@ -21,6 +21,7 @@ function usage()
      -s           swap extruders ( for dreamer and inventor machines )
      -l           enable linear advance ( pressure control algo )
      -u           old style GUI
+     -g           MKS GUI
      -v           verbose build
      
    example:
