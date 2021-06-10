@@ -157,7 +157,11 @@ void MenuItem_static::draw(const uint8_t row, PGM_P const pstr, const uint8_t st
     menu_item(row, sel);
     if (isDir)
       tft.add_image(MENU_ITEM_ICON_X, MENU_ITEM_ICON_Y, imgDirectory, COLOR_MENU_TEXT, sel ? COLOR_SELECTION_BG : COLOR_BACKGROUND);
+#if ENABLED( FF_RUSSIAN_FIX )
+    tft.add_text(MENU_ITEM_ICON_SPACE|0x8000, MENU_TEXT_Y_OFFSET, COLOR_MENU_TEXT, theCard.longest_filename());
+#else
     tft.add_text(MENU_ITEM_ICON_SPACE, MENU_TEXT_Y_OFFSET, COLOR_MENU_TEXT, theCard.longest_filename());
+#endif
   }
 
 #endif
