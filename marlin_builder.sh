@@ -102,7 +102,7 @@ then
       $SIZE --format=berkeley $fw_path/firmware.elf
    fi
    mkdir -p "build"
-   $(pwd)/$fw_tool_dir/ff_fw_tool -e -i $fw_path/firmware.bin -o "build/fw_2.0.8.2_"$machine$name_postfix"_"`date +"%m%d%Y"`".bin"
+   $(pwd)/$fw_tool_dir/ff_fw_tool -e -i $fw_path/firmware.bin -o "build/fw_2.0.9_"$machine$name_postfix"_"`date +"%m%d%Y"`".bin"
 else
    echo "Build failed"
 fi
