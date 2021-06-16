@@ -2,6 +2,7 @@
 
 flags=""
 name_postfix=""
+encryption_key="flashforge790315"
 build_env="FF_F407ZG"
 project_dir="Marlin"
 fw_path=$project_dir"/.pio/build/"$build_env
@@ -82,6 +83,10 @@ then
 elif [[ "$machine" == "inventor" ]]
 then
    flags+="-DFF_INVENTOR_MACHINE"
+elif [[ "$machine" == "dremel" ]]
+then
+   flags+="-DFF_DREMEL_3D20_MACHINE"
+   encryption_key="flashforge123456"
 else
    usage
    exit
@@ -102,7 +107,7 @@ then
       $SIZE --format=berkeley $fw_path/firmware.elf
    fi
    mkdir -p "build"
-   $(pwd)/$fw_tool_dir/ff_fw_tool -e -i $fw_path/firmware.bin -o "build/fw_2.0.9_"$machine$name_postfix"_"`date +"%m%d%Y"`".bin"
+   $(pwd)/$fw_tool_dir/ff_fw_tool -k $encryption_key -e -i $fw_path/firmware.bin -o "build/fw_2.0.9_"$machine$name_postfix"_"`date +"%m%d%Y"`".bin"
 else
    echo "Build failed"
 fi

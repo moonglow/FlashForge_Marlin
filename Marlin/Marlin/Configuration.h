@@ -27,9 +27,15 @@
 //#define FF_INVENTOR_MACHINE
 //#define FF_DREAMER_MACHINE
 //#define FF_DREAMER_NX_MACHINE
+//#define FF_DREMEL_3D20_MACHINE
 //#define FF_EXTRUDER_SWAP
 //#define USE_OLD_MARLIN_UI
 //#define USE_MKS_UI
+
+/* NX and 3D20 mostly the same, but 3D20 does not have heated bed and chamber */
+#if ENABLED( FF_DREMEL_3D20_MACHINE )
+#define FF_DREAMER_NX_MACHINE
+#endif
 
 #if NONE(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE) && ENABLED( FF_EXTRUDER_SWAP )
 #error FF_EXTRUDER_SWAP works only with dreamer and inventor
@@ -157,7 +163,11 @@
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
+#if ENABLED( FF_DREMEL_3D20_MACHINE )
+#define CUSTOM_MACHINE_NAME "Dremel"
+#else
 #define CUSTOM_MACHINE_NAME "FlashForge"
+#endif
 
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like https://www.uuidgenerator.net/version4
@@ -490,10 +500,18 @@
 #define TEMP_SENSOR_5         0
 #define TEMP_SENSOR_6         0
 #define TEMP_SENSOR_7         0
+#if ENABLED( FF_DREMEL_3D20_MACHINE )
+#define TEMP_SENSOR_BED       0
+#else
 #define TEMP_SENSOR_BED       1
+#endif
 #define TEMP_SENSOR_PROBE     0
+#if ENABLED( FF_DREMEL_3D20_MACHINE )
+#define TEMP_SENSOR_CHAMBER   0
+#else
 #define TEMP_SENSOR_CHAMBER   1
-#define TEMP_SENSOR_COOLER 0
+#endif
+#define TEMP_SENSOR_COOLER    0
 #define TEMP_SENSOR_REDUNDANT 0
 
 // Dummy thermistor constant temperature readings, for use with 998 and 999
@@ -740,7 +758,9 @@
  */
 
 #define THERMAL_PROTECTION_HOTENDS // Enable thermal protection for all extruders
+#if DISABLED( FF_DREMEL_3D20_MACHINE )
 #define THERMAL_PROTECTION_BED     // Enable thermal protection for the heated bed
+#endif
 //#define THERMAL_PROTECTION_CHAMBER // Enable thermal protection for the heated chamber
 #define THERMAL_PROTECTION_COOLER  // Enable thermal protection for the laser cooling
 
