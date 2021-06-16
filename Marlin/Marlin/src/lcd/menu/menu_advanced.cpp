@@ -646,6 +646,42 @@ void menu_advanced_settings() {
     );
   #endif
 
+  #if ENABLED( FF_DREMEL_3D20_MACHINE )
+    CONFIRM_ITEM_P( PSTR( "Firmware update trigger" ),
+      MSG_YES, MSG_NO,
+      []
+      {
+        uint32_t signature[7] = { 0 };
+        const uint32_t sig_address = 0x0800C000;
+        FLASH_EraseInitTypeDef erase = {
+          .TypeErase = FLASH_TYPEERASE_SECTORS,
+          .Banks = FLASH_BANK_1,
+          .Sector = FLASH_SECTOR_3,
+          .NbSectors = 1,
+          .VoltageRange = FLASH_VOLTAGE_RANGE_3,
+        };
+        uint32_t erase_err = 0;
+        /* readback signature: magic string + mcu link hash */
+        memcpy( signature, (uint8_t*)sig_address, sizeof( signature ) );
+        HAL_FLASH_Unlock();
+        __HAL_FLASH_CLEAR_FLAG( FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | 
+                                FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR
+                                );
+        HAL_FLASHEx_Erase( &erase,  &erase_err );
+        for( size_t i = 0; i < sizeof(signature)/sizeof(uint32_t); i++ )
+        {
+          HAL_FLASH_Program( FLASH_TYPEPROGRAM_WORD, sig_address + i*sizeof(uint32_t), signature[i] );
+        }
+        FLASH_FlushCaches();
+        HAL_FLASH_Lock();
+
+        ui.return_to_status();
+        ui.set_status_P( "Reboot your printer" );
+      }, nullptr,
+      PSTR( "Write trigger" ), (const char *)nullptr, PSTR("?")
+    );
+  #endif
+
   END_MENU();
 }
 
