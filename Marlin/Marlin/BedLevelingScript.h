@@ -25,6 +25,8 @@
 "G1 Z0 F420\n"\
 "M0 Press to finish\n"\
 "M117 Leveling done\n"\
+"G1 Z5 F420\n"\
+"G28 X Y\n"\
 "M84"
 #elif ENABLED( FF_INVENTOR_MACHINE )
   #define MAIN_MENU_ITEM_3_GCODE \
@@ -51,6 +53,8 @@
 "G1 Z0 F420\n"\
 "M0 Press to finish\n"\
 "M117 Leveling done\n"\
+"G1 Z5 F420\n"\
+"G28 X Y\n"\
 "M84"
 #endif
 #else
@@ -71,5 +75,7 @@
 "G1 X0 Y0 Z10 F3000\n"\
 "G1 Z0 F800\n"\
 "M117 Leveling done\n"\
+"G1 Z5 F420\n"\
+"G28 X Y\n"\
 "M84"
 #endif
