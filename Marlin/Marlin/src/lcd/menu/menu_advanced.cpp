@@ -646,7 +646,7 @@ void menu_advanced_settings() {
     );
   #endif
 
-  #if ENABLED( FF_DREMEL_3D20_MACHINE )
+  #if ANY( FF_DREMEL_3D20_MACHINE, FF_DREAMER_MACHINE )
     CONFIRM_ITEM_P( PSTR( "Firmware update trigger" ),
       MSG_YES, MSG_NO,
       []
