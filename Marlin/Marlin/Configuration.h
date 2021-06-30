@@ -948,18 +948,18 @@
   Black pulley:   X88.90 Y88.90 Z400 E96.56
   Silver pulley:  X94.14 Y94.14 Z400 E96.56
 */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 88.90, 88.90, 400, 96.56/*E0*/ }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 88.909720, 88.909720, 400.0, 96.275202/*E0*/ }
 
 /**
  * Default Max Feed Rate (mm/s)
  * Override with M203
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 500, 500, 10, 50 }
+#define DEFAULT_MAX_FEEDRATE          { 300, 300, 20, 27 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
-  #define MAX_FEEDRATE_EDIT_VALUES    { 600, 600, 10, 50 } // ...or, set your own edit limits
+  #define MAX_FEEDRATE_EDIT_VALUES    { 600, 600, 40, 50 } // ...or, set your own edit limits
 #endif
 
 /**
@@ -968,11 +968,11 @@
  * Override with M201
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 1500, 1500, 500, 5000 }
+#define DEFAULT_MAX_ACCELERATION      { 1000, 1000, 150, 4000 }
 
 #define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
-  #define MAX_ACCEL_EDIT_VALUES       { 3000, 3000, 1000, 10000 } // ...or, set your own edit limits
+  #define MAX_ACCEL_EDIT_VALUES       { 3000, 3000, 500, 8000 } // ...or, set your own edit limits
 #endif
 
 /**
