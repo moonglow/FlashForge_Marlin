@@ -24,6 +24,7 @@
 - Dreamer
 - Inventor
 - Dremel 3D20
+- PowerSpec Ultra 3D
 
 #### Installation guide:
 - [Installing Marlin on FlashForge ( Windows )](https://github.com/moonglow/FlashForge_Marlin/wiki/Windows-instalation-guide)
