@@ -154,18 +154,18 @@ thermosensor K-couple ADS1118
 
 
 /* Temperature Sensors */
-/* use it to skip temp sensor pin checking */
-#define MAX6675_SS_PIN                      ADS1118_CS_PIN
-#define MAX6675_SS2_PIN                     ADS1118_CS_PIN
 
-#define TEMP_0_PIN                          -1 /* skip checking, change to ADS1118 CH0 */
-#define TEMP_1_PIN                          -1 /* skip checking, change to ADS1118 CH1 */
+#define TEMP_0_PIN                          -1
+#define TEMP_1_PIN                          -1
 #define TEMP_BED_PIN                        PC5 /* NTC1 */
 #define TEMP_CHAMBER_PIN                    PC4 /* NTC2 */
 
 /* ADS1118 */
 #define HAS_SPI_ADS1118                     1
-#define ADS1118_CS_PIN                      PA4
+#define TEMP_0_CS_PIN                       PA4
+#define TEMP_1_CS_PIN                       TEMP_0_CS_PIN
+#define ADS1118_CS_PIN                      TEMP_0_CS_PIN
+
 /* SPI1 */
 #define ADS1118_SCK_PIN                     PA5
 #define ADS1118_MISO_PIN                    PA6
@@ -217,7 +217,11 @@ thermosensor K-couple ADS1118
 #endif
 
 /* filament runout */
-#define FIL_RUNOUT_PIN                      -1
+#if ENABLED( FF_INVENTOR_MACHINE )
+#define FIL_RUNOUT_PIN                      PE4 /* Z_MIN_PIN */
+#else
+#define FIL_RUNOUT_PIN                      PF1 /* Z_MAX_PIN */
+#endif
 
 
 /* Servo pin for BLTouch */

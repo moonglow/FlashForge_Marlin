@@ -150,6 +150,8 @@ if (lcd_id != 0xFFFFFFFF) return;
     OUT_WRITE(TFT_BACKLIGHT_PIN, LOW);
   #endif
 
+/* no need to reset TFT controller if bootloader already loads config */
+#if DISABLED( USE_FLASHFORGE_BOOTLOADER_TFT )
   #if PIN_EXISTS(TFT_RESET)
     OUT_WRITE(TFT_RESET_PIN, HIGH);
     delay(10);
@@ -157,6 +159,7 @@ if (lcd_id != 0xFFFFFFFF) return;
     delay(10);
     OUT_WRITE(TFT_RESET_PIN, HIGH);
   #endif
+#endif
 
   #if PIN_EXISTS(TFT_BACKLIGHT)
     OUT_WRITE(TFT_BACKLIGHT_PIN, DISABLED(DELAYED_BACKLIGHT_INIT));
@@ -226,11 +229,15 @@ if (lcd_id != 0xFFFFFFFF) return;
         break;
 #if ENABLED( USE_FLASHFORGE_TFT )
       case ILI9488:
+        #if DISABLED( USE_FLASHFORGE_BOOTLOADER_TFT )
         write_esc_sequence(ff_ili9488_init);
+        #endif
         break;
       case 0x4802:
         lcd_id = ILI9488;
+        #if DISABLED( USE_FLASHFORGE_BOOTLOADER_TFT )
         write_esc_sequence(ff_otm4802_init);
+        #endif
         break;
 #else
       case ILI9488:   // ILI9488    480x320
