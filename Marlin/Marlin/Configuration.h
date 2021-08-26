@@ -1406,7 +1406,7 @@
  */
 #define Z_IDLE_HEIGHT Z_HOME_POS
 
-//#define Z_HOMING_HEIGHT  4      // (mm) Minimal Z height before homing (G28) for Z clearance above the bed, clamps, ...
+//#define Z_HOMING_HEIGHT  0      // (mm) Minimal Z height before homing (G28) for Z clearance above the bed, clamps, ...
                                   // Be sure to have this much clearance over your Z_MAX_POS to prevent grinding.
 
 //#define Z_AFTER_HOMING  10      // (mm) Height to move to after homing Z
@@ -1460,7 +1460,7 @@
 #if ENABLED(FF_INVENTOR_MACHINE)
 #define Z_MAX_POS 155
 #else
-#define Z_MAX_POS 150 /* original 140 */
+#define Z_MAX_POS 140
 #endif
 //#define I_MIN_POS 0
 //#define I_MAX_POS 50
