@@ -32,7 +32,7 @@
 
 /* Select black or silver pulley */
 //#define FF_BLACK_PULLEY     // steps per unit: X88.9 Y88.9 Z400 E96.3
-#define FF_SILVER_PULLEY     // steps per unit: X94.1 Y94.1 Z400 E96.3
+//#define FF_SILVER_PULLEY     // steps per unit: X94.1 Y94.1 Z400 E96.3
   
 //#define FF_EXTRUDER_SWAP
 //#define USE_OLD_MARLIN_UI
