@@ -29,6 +29,11 @@
 //#define FF_DREAMER_MACHINE
 //#define FF_DREAMER_NX_MACHINE
 //#define FF_DREMEL_3D20_MACHINE
+
+/* Select black or silver pulley */
+//#define FF_BLACK_PULLEY     // steps per unit: X88.9 Y88.9 Z400 E96.3
+#define FF_SILVER_PULLEY     // steps per unit: X94.1 Y94.1 Z400 E96.3
+  
 //#define FF_EXTRUDER_SWAP
 //#define USE_OLD_MARLIN_UI
 //#define USE_MKS_UI
@@ -966,12 +971,17 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-/*
-  Black pulley:   X88.90 Y88.90 Z400 E96.56
-  Silver pulley:  X94.14 Y94.14 Z400 E96.56
+/**
+  *Black pulley:   X88.9 Y88.9 Z400 E96.3
+  *Silver pulley:  X94.1 Y94.1 Z400 E96.3
 */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 88.909720, 88.909720, 400.0, 96.275202/*E0*/ }
-
+#if ENABLED(FF_BLACK_PULLEY)
+	#define DEFAULT_AXIS_STEPS_PER_UNIT   { 88.909720, 88.909720, 400.0, 96.275202/*E0*/ }
+#elif ENABLED(FF_SILVER_PULLEY)
+	#define DEFAULT_AXIS_STEPS_PER_UNIT   { 94.139704, 94.139704, 400.0, 96.275202/*E0*/ }
+#else
+	#error Invalid pulley selection
+#endif
 /**
  * Default Max Feed Rate (mm/s)
  * Override with M203
