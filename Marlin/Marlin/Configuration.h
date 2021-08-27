@@ -22,9 +22,11 @@
 #pragma once
 
 /* you must be sure what you know what you do :) */
-#define FF_FLASHAIR_FIX
-#define FF_RUSSIAN_FIX
-#define FF_M907_PROTECTION
+#define FF_FLASHAIR_FIX   //...
+#define FF_RUSSIAN_FIX   //...
+#define FF_M907_PROTECTION   //...
+
+/* Select one of the printers below */
 //#define FF_INVENTOR_MACHINE
 //#define FF_DREAMER_MACHINE
 //#define FF_DREAMER_NX_MACHINE
@@ -33,18 +35,21 @@
 /* Select black or silver pulley */
 //#define FF_BLACK_PULLEY     // steps per unit: X88.9 Y88.9 Z400 E96.3
 //#define FF_SILVER_PULLEY     // steps per unit: X94.1 Y94.1 Z400 E96.3
-  
+
+/* Switch left and right extruder */ 
 //#define FF_EXTRUDER_SWAP
+
+#if NONE(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE) && ENABLED( FF_EXTRUDER_SWAP )
+#error FF_EXTRUDER_SWAP works only with dreamer and inventor
+#endif
+
+/* Select UI type */ 
 //#define USE_OLD_MARLIN_UI
 //#define USE_MKS_UI
 
 /* NX and 3D20 mostly same, but 3D20 does not have heated bed and chamber */
 #if ENABLED( FF_DREMEL_3D20_MACHINE )
 #define FF_DREAMER_NX_MACHINE
-#endif
-
-#if NONE(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE) && ENABLED( FF_EXTRUDER_SWAP )
-#error FF_EXTRUDER_SWAP works only with dreamer and inventor
 #endif
 
 /**
