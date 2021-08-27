@@ -21,6 +21,10 @@
  */
 #pragma once
 
+//===========================================================================
+//========================== Setup Printer Here =============================
+//===========================================================================
+
 /* you must be sure what you know what you do :) */
 #define FF_FLASHAIR_FIX   //...
 #define FF_RUSSIAN_FIX   //...
@@ -38,7 +42,6 @@
 
 /* Switch left and right extruder */ 
 //#define FF_EXTRUDER_SWAP
-
 #if NONE(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE) && ENABLED( FF_EXTRUDER_SWAP )
 #error FF_EXTRUDER_SWAP works only with dreamer and inventor
 #endif
@@ -51,6 +54,8 @@
 #if ENABLED( FF_DREMEL_3D20_MACHINE )
 #define FF_DREAMER_NX_MACHINE
 #endif
+
+//===========================================================================
 
 /**
  * Configuration.h
