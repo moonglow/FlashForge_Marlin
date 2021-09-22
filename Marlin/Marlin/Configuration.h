@@ -25,11 +25,28 @@
 #define FF_FLASHAIR_FIX
 #define FF_RUSSIAN_FIX
 #define FF_M907_PROTECTION
+
+/* Select one of the printers below */
 //#define FF_INVENTOR_MACHINE
 //#define FF_DREAMER_MACHINE
 //#define FF_DREAMER_NX_MACHINE
 //#define FF_DREMEL_3D20_MACHINE
+
+/* Select black or silver pulley */
+//#define FF_BLACK_PULLEY
+//#define FF_SILVER_PULLEY
+
+#if NONE(FF_BLACK_PULLEY, FF_SILVER_PULLEY)
+#define FF_BLACK_PULLEY
+#endif
+
+/* Switch left and right extruder */ 
 //#define FF_EXTRUDER_SWAP
+#if NONE(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE) && ENABLED( FF_EXTRUDER_SWAP )
+#error FF_EXTRUDER_SWAP works only with dreamer and inventor
+#endif
+
+/* Select UI type */ 
 //#define USE_OLD_MARLIN_UI
 //#define USE_MKS_UI
 
@@ -38,9 +55,6 @@
 #define FF_DREAMER_NX_MACHINE
 #endif
 
-#if NONE(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE) && ENABLED( FF_EXTRUDER_SWAP )
-#error FF_EXTRUDER_SWAP works only with dreamer and inventor
-#endif
 
 /**
  * Configuration.h
@@ -966,12 +980,17 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-/*
-  Black pulley:   X88.90 Y88.90 Z400 E96.56
-  Silver pulley:  X94.14 Y94.14 Z400 E96.56
+/**
+  *Black pulley:   X88.9 Y88.9 Z400 E96.3
+  *Silver pulley:  X94.1 Y94.1 Z400 E96.3
 */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 88.909720, 88.909720, 400.0, 96.275202/*E0*/ }
-
+#if ENABLED(FF_BLACK_PULLEY)
+	#define DEFAULT_AXIS_STEPS_PER_UNIT   { 88.909720, 88.909720, 400.0, 96.275202/*E0*/ }
+#elif ENABLED(FF_SILVER_PULLEY)
+	#define DEFAULT_AXIS_STEPS_PER_UNIT   { 94.139704, 94.139704, 400.0, 96.275202/*E0*/ }
+#else
+	#error Invalid pulley selection
+#endif
 /**
  * Default Max Feed Rate (mm/s)
  * Override with M203
@@ -1460,7 +1479,7 @@
 #if ENABLED(FF_INVENTOR_MACHINE)
 #define Z_MAX_POS 155
 #else
-#define Z_MAX_POS 150 /* original 140 */
+#define Z_MAX_POS 140
 #endif
 //#define I_MIN_POS 0
 //#define I_MAX_POS 50
