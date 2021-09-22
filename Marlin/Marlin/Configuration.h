@@ -21,14 +21,10 @@
  */
 #pragma once
 
-//===========================================================================
-//========================== Setup Printer Here =============================
-//===========================================================================
-
 /* you must be sure what you know what you do :) */
-#define FF_FLASHAIR_FIX   //...
-#define FF_RUSSIAN_FIX   //...
-#define FF_M907_PROTECTION   //...
+#define FF_FLASHAIR_FIX
+#define FF_RUSSIAN_FIX
+#define FF_M907_PROTECTION
 
 /* Select one of the printers below */
 //#define FF_INVENTOR_MACHINE
@@ -37,8 +33,12 @@
 //#define FF_DREMEL_3D20_MACHINE
 
 /* Select black or silver pulley */
-//#define FF_BLACK_PULLEY     // steps per unit: X88.9 Y88.9 Z400 E96.3
-//#define FF_SILVER_PULLEY     // steps per unit: X94.1 Y94.1 Z400 E96.3
+//#define FF_BLACK_PULLEY
+//#define FF_SILVER_PULLEY
+
+#if NONE(FF_BLACK_PULLEY, FF_SILVER_PULLEY)
+#define FF_BLACK_PULLEY
+#endif
 
 /* Switch left and right extruder */ 
 //#define FF_EXTRUDER_SWAP
