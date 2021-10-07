@@ -247,4 +247,9 @@ thermosensor K-couple ADS1118
 #define W25QXX_MOSI_PIN   MOSI_PIN
 #define W25QXX_SCK_PIN    SCK_PIN
 #define W25QXX_CS_PIN     PB12
-#endif 
+
+#define SPI_FLASH_MISO_PIN  MISO_PIN
+#define SPI_FLASH_MOSI_PIN  MOSI_PIN
+#define SPI_FLASH_SCK_PIN   SCK_PIN
+#define SPI_FLASH_CS_PIN    PB12
+#endif
