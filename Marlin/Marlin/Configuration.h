@@ -1407,11 +1407,23 @@
 //#define INVERT_K_DIR false
 
 // @section extruder
-
 // For direct drive extruder v9 set to true, for geared extruder set to false.
 #if ANY(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE)
+#if ENABLED(FF_EXTRUDER_SWAP)
+#if ENABLED(FF_DREAMER_OLD_MB)
+#define INVERT_E0_DIR true
+#else
 #define INVERT_E0_DIR false
+#endif
 #define INVERT_E1_DIR false
+#else
+#define INVERT_E0_DIR false
+#if ENABLED(FF_DREAMER_OLD_MB)
+#define INVERT_E1_DIR true
+#else
+#define INVERT_E1_DIR false
+#endif
+#endif
 #else
 #define INVERT_E0_DIR true
 #define INVERT_E1_DIR true
@@ -1487,7 +1499,7 @@
 
 #define Z_MIN_POS 0
 #if ENABLED(FF_INVENTOR_MACHINE)
-#define Z_MAX_POS 155
+#define Z_MAX_POS 160
 #else
 #define Z_MAX_POS 140
 #endif

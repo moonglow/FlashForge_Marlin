@@ -7,6 +7,7 @@ build_env="FF_F407ZG"
 project_dir="Marlin"
 fw_path=$project_dir"/.pio/build/"$build_env
 fw_tool_dir="flashforge_firmware_tool"
+fw_version=$(awk '/fine SHORT_BUILD_VERSION/{ print substr($3,2,length($3)-2) }' Marlin/Marlin/Version.h)
 build_silent="--silent"
 SIZE=arm-none-eabi-size
 
@@ -20,6 +21,7 @@ function usage()
      -h           show this help message and exit
      -m           machine name ( nx/dreamer/inventor )
      -s           swap extruders ( for dreamer and inventor machines )
+     -o           use Dreamer old motherboard ( swap extruder DIR )
      -l           enable linear advance ( pressure control algo )
      -u           old style GUI
      -g           MKS GUI
@@ -53,7 +55,7 @@ then
    fi
 fi
 
-while getopts "m:slhvug" opt
+while getopts "m:slohvug" opt
 do
    case "$opt" in
       m ) machine="$OPTARG" ;;
@@ -65,6 +67,9 @@ do
          ;;
       u ) flags+="-DUSE_OLD_MARLIN_UI "
           name_postfix+="_classic"
+         ;;
+      o ) flags+="-DFF_DREAMER_OLD_MB "
+          name_postfix+="_dir"
          ;;
       g ) flags+="-DUSE_MKS_UI "
           name_postfix+="_mks"
@@ -107,7 +112,7 @@ then
       $SIZE --format=berkeley $fw_path/firmware.elf
    fi
    mkdir -p "build"
-   $(pwd)/$fw_tool_dir/ff_fw_tool -k $encryption_key -e -i $fw_path/firmware.bin -o "build/fw_2.0.9.1_"$machine$name_postfix"_"`date +"%m%d%Y"`".bin"
+   $(pwd)/$fw_tool_dir/ff_fw_tool -k $encryption_key -e -i $fw_path/firmware.bin -o build/$machine"_"$fw_version$name_postfix"_"`date +"%m%d%Y"`".bin"
 else
    echo "Build failed"
 fi
