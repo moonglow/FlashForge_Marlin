@@ -303,7 +303,6 @@
 
   #define PARKING_EXTRUDER_PARKING_X { -78, 184 }     // X positions for parking the extruders
   #define PARKING_EXTRUDER_GRAB_DISTANCE 1            // (mm) Distance to move beyond the parking point to grab the extruder
-  //#define MANUAL_SOLENOID_CONTROL                   // Manual control of docking solenoids with M380 S / M381
 
   #if ENABLED(PARKING_EXTRUDER)
 
@@ -1409,24 +1408,24 @@
 // @section extruder
 // For direct drive extruder v9 set to true, for geared extruder set to false.
 #if ANY(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE)
-#if ENABLED(FF_EXTRUDER_SWAP)
-#if ENABLED(FF_DREAMER_OLD_MB)
-#define INVERT_E0_DIR true
+  #if ENABLED(FF_EXTRUDER_SWAP)
+      #define INVERT_E0_DIR false
+      #if ENABLED(FF_DREAMER_OLD_MB)
+          #define INVERT_E1_DIR true
+      #else
+          #define INVERT_E1_DIR false
+      #endif
+  #else
+      #define INVERT_E1_DIR false
+      #if ENABLED(FF_DREAMER_OLD_MB)
+          #define INVERT_E0_DIR true
+      #else
+          #define INVERT_E0_DIR false
+      #endif
+  #endif
 #else
-#define INVERT_E0_DIR false
-#endif
-#define INVERT_E1_DIR false
-#else
-#define INVERT_E0_DIR false
-#if ENABLED(FF_DREAMER_OLD_MB)
-#define INVERT_E1_DIR true
-#else
-#define INVERT_E1_DIR false
-#endif
-#endif
-#else
-#define INVERT_E0_DIR true
-#define INVERT_E1_DIR true
+  #define INVERT_E0_DIR true
+  #define INVERT_E1_DIR true
 #endif
 #define INVERT_E2_DIR false
 #define INVERT_E3_DIR false
