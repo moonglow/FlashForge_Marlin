@@ -54,7 +54,7 @@ static byte current_to_wiper(const float current) {
   {
     thermalManager.disable_all_heaters();
     watchdog_refresh();
-    kill( PSTR( "M907 overcurrent!" ), nullptr, true );
+    kill( F( "M907 overcurrent!" ), nullptr, true );
   }
 #endif
   return byte(constrain(value, 0, DIGIPOT_MCP4018_MAX_VALUE));
