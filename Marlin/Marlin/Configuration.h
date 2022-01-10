@@ -394,8 +394,13 @@
 // The offset has to be X=0, Y=0 for the extruder 0 hotend (default extruder).
 // For the other hotends it is their distance from the extruder 0 hotend.
 #if ANY(FF_INVENTOR_MACHINE,FF_DREAMER_MACHINE)
+#if ENABLED(FF_EXTRUDER_SWAP)
+#define HOTEND_OFFSET_X { 0.0, 34.0 } // (mm) relative X-offset for each nozzle
+#else
 #define HOTEND_OFFSET_X { 0.0, -34.0 } // (mm) relative X-offset for each nozzle
 #endif
+#endif
+
 //#define HOTEND_OFFSET_Y { 0.0, 5.00 }  // (mm) relative Y-offset for each nozzle
 //#define HOTEND_OFFSET_Z { 0.0, 0.00 }  // (mm) relative Z-offset for each nozzle
 
