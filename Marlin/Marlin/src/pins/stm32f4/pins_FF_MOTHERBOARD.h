@@ -184,19 +184,11 @@ thermosensor K-couple ADS1118
 #define HEATER_1_PIN                        PA2  /* Heater EX2 */
 #endif
 #define HEATER_BED_PIN                      PA1  /* Heat Board */
-#if 0
-#define CHAMBER_AUTO_FAN_PIN                PE1  /* FF rearcase fan */
-#else
+
 #define HEATER_CHAMBER_PIN                  USER_LED1_PIN
-/* chamber fan index is set to `CHAMBER_FAN_INDEX = HOTENDS` */
-//#if HOTENDS > 1
-//#define FAN2_PIN                            PE1  /* FF rearcase fan */
-//#else
-//#define FAN1_PIN                            PE1  /* FF rearcase fan */
 /* from 2.0.9.3 */
-#define FAN1_PIN                            PE1
+#define FAN1_PIN                            PE1 /* FF rearcase fan */
 #define CHAMBER_FAN_INDEX                   1
-#endif
 
 /* part colling fan aka FAN0 */
 #define FAN_PIN                             PF5

@@ -222,8 +222,8 @@ PGMSTR(str_t_heating_failed, STR_T_HEATING_FAILED);
 #else
   #define _COOLER_FSTR(h)
 #endif
-#define _E_FSTR(h,N) ((HOTENDS) > N && (h) == N) ? F(LCD_STR_E##N) :
-#define HEATER_FSTR(h) _BED_FSTR(h) _CHAMBER_FSTR(h) _COOLER_FSTR(h) _E_FSTR(h,1) _E_FSTR(h,2) _E_FSTR(h,3) _E_FSTR(h,4) _E_FSTR(h,5) F(LCD_STR_E0)
+#define _E_FSTR(h,N) ((HOTENDS) > N && (h) == N) ? F(STR_E##N) :
+#define HEATER_FSTR(h) _BED_FSTR(h) _CHAMBER_FSTR(h) _COOLER_FSTR(h) _E_FSTR(h,1) _E_FSTR(h,2) _E_FSTR(h,3) _E_FSTR(h,4) _E_FSTR(h,5) _E_FSTR(h,6) _E_FSTR(h,7) F(STR_E0)
 
 //
 // Initialize MAX TC objects/SPI
@@ -1448,7 +1448,7 @@ void Temperature::manage_heater() {
 
       TERN_(HEATER_IDLE_HANDLER, heater_idle[IDLE_INDEX_BED].update(ms));
 
-      #if HAS_THERMALLY_PROTECTED_BED
+      #if ENABLED(THERMAL_PROTECTION_BED)
         tr_state_machine[RUNAWAY_IND_BED].run(temp_bed.celsius, temp_bed.target, H_BED, THERMAL_PROTECTION_BED_PERIOD, THERMAL_PROTECTION_BED_HYSTERESIS);
       #endif
 
@@ -2582,20 +2582,14 @@ void Temperature::init() {
       );
     */
 
-    #if HEATER_IDLE_HANDLER
-      // If the heater idle timeout expires, restart
-      if (heater_idle[idle_index].timed_out) {
-        state = TRInactive;
-        running_temp = 0;
-      }
-      else
-    #endif
-    {
-      // If the target temperature changes, restart
-      if (running_temp != target) {
-        running_temp = target;
-        state = target > 0 ? TRFirstHeating : TRInactive;
-      }
+    // If the heater idle timeout expires, restart
+    if (TERN0(HEATER_IDLE_HANDLER, heater_idle[idle_index].timed_out)) {
+      state = TRInactive;
+      running_temp = 0;
+    }
+    else if (running_temp != target) { // If the target temperature changes, restart
+      running_temp = target;
+      state = target > 0 ? TRFirstHeating : TRInactive;
     }
 
     switch (state) {
@@ -2608,7 +2602,7 @@ void Temperature::init() {
         state = TRStable;
 
       // While the temperature is stable watch for a bad temperature
-      case TRStable:
+      case TRStable: {
 
         #if ENABLED(ADAPTIVE_FAN_SLOWING)
           if (adaptive_fan_slowing && heater_id >= 0) {
@@ -2626,12 +2620,16 @@ void Temperature::init() {
           }
         #endif
 
+        const millis_t now = millis();
+
         if (current >= running_temp - hysteresis_degc) {
-          timer = millis() + SEC_TO_MS(period_seconds);
+          timer = now + SEC_TO_MS(period_seconds);
           break;
         }
-        else if (PENDING(millis(), timer)) break;
+        else if (PENDING(now, timer)) break;
         state = TRRunaway;
+
+      } // fall through
 
       case TRRunaway:
         TERN_(HAS_DWIN_E3V2_BASIC, DWIN_Popup_Temperature(0));
