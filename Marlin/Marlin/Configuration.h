@@ -2933,12 +2933,13 @@
   //#define TOUCH_IDLE_SLEEP 300 // (secs) Turn off the TFT backlight if set (5mn)
 
   #define TOUCH_SCREEN_CALIBRATION
-  #define XPT2046_X_CALIBRATION    17114
-  #define XPT2046_Y_CALIBRATION   -12430
-  #define XPT2046_X_OFFSET           -24
-  #define XPT2046_Y_OFFSET           345
+  //Invoke touchscreen calibration by default
+  #define TOUCH_CALIBRATION_X    17114
+  #define TOUCH_CALIBRATION_Y    -12430
+  #define TOUCH_OFFSET_X         -24
+  #define TOUCH_OFFSET_Y         345
 
-  //#define TOUCH_ORIENTATION TOUCH_LANDSCAPE
+  #define TOUCH_ORIENTATION TOUCH_LANDSCAPE
   #if BOTH(TOUCH_SCREEN_CALIBRATION, EEPROM_SETTINGS)
     #define TOUCH_CALIBRATION_AUTO_SAVE // Auto save successful calibration values to EEPROM
   #endif
