@@ -179,9 +179,9 @@
 
 // Name displayed in the LCD "Ready" message and Info menu
 #if ENABLED( FF_DREMEL_3D20_MACHINE )
-#define CUSTOM_MACHINE_NAME "Dremel"
+  #define CUSTOM_MACHINE_NAME "Dremel"
 #else
-#define CUSTOM_MACHINE_NAME "FlashForge"
+  #define CUSTOM_MACHINE_NAME "FlashForge"
 #endif
 
 // Printer's unique ID, used by some programs to differentiate between machines.
@@ -232,9 +232,9 @@
 // This defines the number of extruders
 // :[0, 1, 2, 3, 4, 5, 6, 7, 8]
 #if ANY(FF_INVENTOR_MACHINE,FF_DREAMER_MACHINE)
-#define EXTRUDERS 2
+  #define EXTRUDERS 2
 #else
-#define EXTRUDERS 1
+  #define EXTRUDERS 1
 #endif
 
 // Generally expected filament diameter (1.75, 2.85, 3.0, ...). Used for Volumetric, Filament Width Sensor, etc.
@@ -538,7 +538,7 @@
  */
 #define TEMP_SENSOR_0         -666
 #if EXTRUDERS > 1
-#define TEMP_SENSOR_1         -666
+  #define TEMP_SENSOR_1       -666
 #endif
 #define TEMP_SENSOR_2         0
 #define TEMP_SENSOR_3         0
@@ -547,18 +547,18 @@
 #define TEMP_SENSOR_6         0
 #define TEMP_SENSOR_7         0
 #if ENABLED( FF_DREMEL_3D20_MACHINE )
-#define TEMP_SENSOR_BED       0
+  #define TEMP_SENSOR_BED     0
 #else
-#define TEMP_SENSOR_BED       1
+  #define TEMP_SENSOR_BED     1
 #endif
 #define TEMP_SENSOR_PROBE     0
 #if ENABLED( FF_DREMEL_3D20_MACHINE )
-#define TEMP_SENSOR_CHAMBER   0
+  #define TEMP_SENSOR_CHAMBER 0
 #else
-#define TEMP_SENSOR_CHAMBER   1
+  #define TEMP_SENSOR_CHAMBER 1
 #endif
 #define TEMP_SENSOR_COOLER    0
-#define TEMP_SENSOR_BOARD 0
+#define TEMP_SENSOR_BOARD     0
 #define TEMP_SENSOR_REDUNDANT 0
 
 // Dummy thermistor constant temperature readings, for use with 998 and 999
@@ -948,6 +948,11 @@
 //#define E5_DRIVER_TYPE A4988
 //#define E6_DRIVER_TYPE A4988
 //#define E7_DRIVER_TYPE A4988
+
+// stepper driver parameters specific to FlashForge
+#define DIGIPOT_A4988_Rsx               0.270 /* FlashForge drivers Rsense */
+#define DIGIPOT_A4988_Vrefmax           2.3   /* HR4988 */
+
 
 // Enable this feature if all enabled endstop pins are interrupt-capable.
 // This will remove the need to poll the interrupt pins, saving many CPU cycles.
