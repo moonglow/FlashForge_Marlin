@@ -31,8 +31,12 @@
 
 // Settings for the I2C based DIGIPOT (MCP4018) based on WT150
 
-#define DIGIPOT_A4988_Rsx               0.270 /* FlashForge drivers Rsense */
-#define DIGIPOT_A4988_Vrefmax           2.3   /* HR4988 */
+#ifndef DIGIPOT_A4988_Rsx
+  #define DIGIPOT_A4988_Rsx             0.250
+#endif
+#ifndef DIGIPOT_A4988_Vrefmax
+  #define DIGIPOT_A4988_Vrefmax         1.666
+#endif
 #define DIGIPOT_MCP4018_MAX_VALUE       127
 
 #define DIGIPOT_A4988_Itripmax(Vref)    ((Vref) / (8.0 * DIGIPOT_A4988_Rsx))
@@ -41,8 +45,8 @@
 #define DIGIPOT_A4988_MAX_CURRENT       2.0
 
 #if ENABLED( FF_M907_PROTECTION )
-#include "../../MarlinCore.h"
-#include "../../module/temperature.h"
+  #include "../../MarlinCore.h"
+  #include "../../module/temperature.h"
 #endif
 
 static byte current_to_wiper(const float current) {
@@ -50,8 +54,7 @@ static byte current_to_wiper(const float current) {
 
 #if ENABLED( FF_M907_PROTECTION )
   /* protect printer from old original FF firmware G-Codes */
-  if( current > DIGIPOT_A4988_MAX_CURRENT )
-  {
+  if( current > DIGIPOT_A4988_MAX_CURRENT ) {
     thermalManager.disable_all_heaters();
     watchdog_refresh();
     kill( F( "M907 overcurrent!" ), nullptr, true );

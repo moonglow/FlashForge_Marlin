@@ -3869,8 +3869,8 @@
   #define CUSTOM_MENU_MAIN_TITLE "User menu"
   //#define CUSTOM_MENU_MAIN_SCRIPT_DONE "M117 User Script Done"
   #define CUSTOM_MENU_MAIN_SCRIPT_AUDIBLE_FEEDBACK
-  #define CUSTOM_MENU_MAIN_SCRIPT_RETURN  // Return to status screen after a script
-  #define CUSTOM_MENU_MAIN_ONLY_IDLE         // Only show custom menu when the machine is idle
+  #define CUSTOM_MENU_MAIN_SCRIPT_RETURN      // Return to status screen after a script
+  #define CUSTOM_MENU_MAIN_ONLY_IDLE          // Only show custom menu when the machine is idle
 
   #define MAIN_MENU_ITEM_1_DESC   "Enable case fan"
   #define MAIN_MENU_ITEM_1_GCODE  "M141 S45"
