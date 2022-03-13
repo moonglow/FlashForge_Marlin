@@ -7,7 +7,6 @@ Usage:  ./ff_flash_firmware.py /path/to/firmware.bin
 '''
 
 import hashlib
-from operator import contains
 import sys
 from time import sleep
 import usb
@@ -57,7 +56,7 @@ def send_command(command, expectreply=True):
 TARGET_FIRMWARE_NAME = 'firmware.bin'
 FLASHFORGE_VENDOR_IDS = [0x2a89,    # Dremel
                          0x2b71,    # FlashForge
-                         0x0315     # PowerSpec
+                         0x0315     # FlashForge bootloader
                         ]
 MAX_WAIT_TIME = 0.5  # 500 milliseconds
 RETRY_COUNT = 20
