@@ -20,7 +20,7 @@ def to_string(byt):
 Send command to printer and wait for a reply until we either get 'ok' or timeout
 
 Parameters:
-	command : string containing command M/G g-code command
+  command : string containing command M/G g-code command
   expectreply : set True to generate exception if printer does not respond
 Returns:
   True if the printer responded
