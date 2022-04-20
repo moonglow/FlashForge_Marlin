@@ -24,7 +24,7 @@
 /* you must be sure what you know what you do :) */
 #define FF_FLASHAIR_FIX
 #define FF_RUSSIAN_FIX
-#define FF_M907_PROTECTION
+#define M907_PROTECTION
 
 /* Select one of the printers below */
 //#define FF_INVENTOR_MACHINE
@@ -37,13 +37,13 @@
 //#define FF_SILVER_PULLEY
 
 #if NONE(FF_BLACK_PULLEY, FF_SILVER_PULLEY)
-#define FF_BLACK_PULLEY
+  #define FF_BLACK_PULLEY
 #endif
 
 /* Switch left and right extruder */ 
 //#define FF_EXTRUDER_SWAP
-#if NONE(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE) && ENABLED( FF_EXTRUDER_SWAP )
-#error FF_EXTRUDER_SWAP works only with dreamer and inventor
+#if NONE(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE) && ENABLED(FF_EXTRUDER_SWAP)
+  #error FF_EXTRUDER_SWAP works only with Dreamer, Inventor
 #endif
 
 /* Select UI type */ 
@@ -51,8 +51,8 @@
 //#define USE_MKS_UI
 
 /* NX and 3D20 mostly same, but 3D20 does not have heated bed and chamber */
-#if ENABLED( FF_DREMEL_3D20_MACHINE )
-#define FF_DREAMER_NX_MACHINE
+#if ENABLED(FF_DREMEL_3D20_MACHINE)
+  #define FF_DREAMER_NX_MACHINE
 #endif
 
 
@@ -178,7 +178,7 @@
 //#define BLUETOOTH
 
 // Name displayed in the LCD "Ready" message and Info menu
-#if ENABLED( FF_DREMEL_3D20_MACHINE )
+#if ENABLED(FF_DREMEL_3D20_MACHINE)
   #define CUSTOM_MACHINE_NAME "Dremel"
 #else
   #define CUSTOM_MACHINE_NAME "FlashForge"
@@ -231,7 +231,7 @@
 
 // This defines the number of extruders
 // :[0, 1, 2, 3, 4, 5, 6, 7, 8]
-#if ANY(FF_INVENTOR_MACHINE,FF_DREAMER_MACHINE)
+#if ANY(FF_INVENTOR_MACHINE, FF_DREAMER_MACHINE)
   #define EXTRUDERS 2
 #else
   #define EXTRUDERS 1
@@ -393,12 +393,12 @@
 // Offset of the extruders (uncomment if using more than one and relying on firmware to position when changing).
 // The offset has to be X=0, Y=0 for the extruder 0 hotend (default extruder).
 // For the other hotends it is their distance from the extruder 0 hotend.
-#if ANY(FF_INVENTOR_MACHINE,FF_DREAMER_MACHINE)
-#if ENABLED(FF_EXTRUDER_SWAP)
-#define HOTEND_OFFSET_X { 0.0, 34.0 } // (mm) relative X-offset for each nozzle
-#else
-#define HOTEND_OFFSET_X { 0.0, -34.0 } // (mm) relative X-offset for each nozzle
-#endif
+#if ANY(FF_INVENTOR_MACHINE, FF_DREAMER_MACHINE)
+  #if ENABLED(FF_EXTRUDER_SWAP)
+    #define HOTEND_OFFSET_X { 0.0, 34.0 } // (mm) relative X-offset for each nozzle
+  #else
+    #define HOTEND_OFFSET_X { 0.0, -34.0 } // (mm) relative X-offset for each nozzle
+  #endif
 #endif
 
 //#define HOTEND_OFFSET_Y { 0.0, 5.00 }  // (mm) relative Y-offset for each nozzle
@@ -546,13 +546,13 @@
 #define TEMP_SENSOR_5         0
 #define TEMP_SENSOR_6         0
 #define TEMP_SENSOR_7         0
-#if ENABLED( FF_DREMEL_3D20_MACHINE )
+#if ENABLED(FF_DREMEL_3D20_MACHINE)
   #define TEMP_SENSOR_BED     0
 #else
   #define TEMP_SENSOR_BED     1
 #endif
 #define TEMP_SENSOR_PROBE     0
-#if ENABLED( FF_DREMEL_3D20_MACHINE )
+#if ENABLED(FF_DREMEL_3D20_MACHINE)
   #define TEMP_SENSOR_CHAMBER 0
 #else
   #define TEMP_SENSOR_CHAMBER 1
@@ -650,8 +650,8 @@
 #if ENABLED(PIDTEMP)
   #define PID_EDIT_MENU         // Add PID editing to the "Advanced Settings" menu. (~700 bytes of PROGMEM)
   #define PID_AUTOTUNE_MENU     // Add PID auto-tuning to the "Advanced Settings" menu. (~250 bytes of PROGMEM)
-  #if ( EXTRUDERS > 1 )
-  #define PID_PARAMS_PER_HOTEND // Uses separate PID parameters for each extruder (useful for mismatched extruders)
+  #if (EXTRUDERS > 1)
+    #define PID_PARAMS_PER_HOTEND // Uses separate PID parameters for each extruder (useful for mismatched extruders)
                                   // Set/get with gcode: M301 E[extruder number, 0-2]
   #endif
 
@@ -799,8 +799,8 @@
  */
 
 #define THERMAL_PROTECTION_HOTENDS // Enable thermal protection for all extruders
-#if DISABLED( FF_DREMEL_3D20_MACHINE )
-#define THERMAL_PROTECTION_BED     // Enable thermal protection for the heated bed
+#if DISABLED(FF_DREMEL_3D20_MACHINE)
+  #define THERMAL_PROTECTION_BED   // Enable thermal protection for the heated bed
 #endif
 //#define THERMAL_PROTECTION_CHAMBER // Enable thermal protection for the heated chamber
 #define THERMAL_PROTECTION_COOLER  // Enable thermal protection for the laser cooling
@@ -843,8 +843,8 @@
 // extra connectors. Leave undefined any used for non-endstop and non-probe purposes.
 //#define USE_XMIN_PLUG
 //#define USE_YMIN_PLUG
-#if ANY( FF_DREAMER_MACHINE, FF_DREAMER_NX_MACHINE ) 
-#define USE_ZMIN_PLUG
+#if ANY(FF_CREATOR_MACHINE, FF_DREAMER_MACHINE, FF_DREAMER_NX_MACHINE) 
+  #define USE_ZMIN_PLUG
 #endif
 //#define USE_IMIN_PLUG
 //#define USE_JMIN_PLUG
@@ -852,7 +852,7 @@
 #define USE_XMAX_PLUG
 #define USE_YMAX_PLUG
 #if ENABLED(FF_INVENTOR_MACHINE)
-#define USE_ZMAX_PLUG
+  #define USE_ZMAX_PLUG
 #endif
 //#define USE_IMAX_PLUG
 //#define USE_JMAX_PLUG
@@ -1097,7 +1097,7 @@
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
 #if DISABLED(LIN_ADVANCE)
-#define S_CURVE_ACCELERATION
+  #define S_CURVE_ACCELERATION
 #endif
 
 //===========================================================================
@@ -1135,9 +1135,9 @@
  *      - normally-open switches to 5V and D32.
  */
 #if ANY(FF_DREAMER_MACHINE, FF_DREAMER_NX_MACHINE)
-#define Z_MIN_PROBE_PIN Z_MAX_PIN
+  #define Z_MIN_PROBE_PIN Z_MAX_PIN
 #else
-#define Z_MIN_PROBE_PIN Z_MIN_PIN /* Inventor */
+  #define Z_MIN_PROBE_PIN Z_MIN_PIN /* Inventor */
 #endif
 
 /**
@@ -1476,9 +1476,9 @@
 #define X_HOME_DIR  1
 #define Y_HOME_DIR  1
 #if ENABLED(FF_INVENTOR_MACHINE)
-#define Z_HOME_DIR  1
+  #define Z_HOME_DIR  1
 #else
-#define Z_HOME_DIR -1
+  #define Z_HOME_DIR -1
 #endif
 //#define I_HOME_DIR -1
 //#define J_HOME_DIR -1
@@ -1490,37 +1490,37 @@
 #define X_BED_SIZE 230
 #define Y_BED_SIZE 150
 
-#if ENABLED( FF_EXTRUDER_SWAP )
-#define FF_TOOL_OFFSET  34
+#if ENABLED(FF_EXTRUDER_SWAP)
+  #define FF_TOOL_OFFSET  34
 #else
-#define FF_TOOL_OFFSET   0
+  #define FF_TOOL_OFFSET   0
 #endif
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
 #if ENABLED(FF_INVENTOR_MACHINE)
-#define X_MAX_POS   (159.99-FF_TOOL_OFFSET)
-#define Y_MAX_POS    75.00
-#define X_MIN_POS  (-110.00-FF_TOOL_OFFSET)
-#define Y_MIN_POS   -75.00
+  #define X_MAX_POS   (159.99-FF_TOOL_OFFSET)
+  #define Y_MAX_POS     75.00
+  #define X_MIN_POS  (-110.00-FF_TOOL_OFFSET)
+  #define Y_MIN_POS    -75.00
 #elif ENABLED(FF_DREAMER_MACHINE)
-#define X_MAX_POS   (156.99-FF_TOOL_OFFSET)
-#define Y_MAX_POS    79.99
-#define X_MIN_POS  (-113.00-FF_TOOL_OFFSET)
-#define Y_MIN_POS   -79.99
+  #define X_MAX_POS   (156.99-FF_TOOL_OFFSET)
+  #define Y_MAX_POS     79.99
+  #define X_MIN_POS  (-113.00-FF_TOOL_OFFSET)
+  #define Y_MIN_POS    -79.99
 #elif ENABLED(FF_DREAMER_NX_MACHINE)
-#define X_MAX_POS   158.50
-#define Y_MAX_POS    76.23
-#define X_MIN_POS  -111.00
-#define Y_MIN_POS   -76.23
+  #define X_MAX_POS    158.50
+  #define Y_MAX_POS     76.23
+  #define X_MIN_POS   -111.00
+  #define Y_MIN_POS    -76.23
 #else
-#error Invalid printer model selection
+  #error Invalid printer model selection
 #endif
 
 #define Z_MIN_POS 0
 #if ENABLED(FF_INVENTOR_MACHINE)
-#define Z_MAX_POS 160
+  #define Z_MAX_POS 160
 #else
-#define Z_MAX_POS 140
+  #define Z_MAX_POS 140
 #endif
 //#define I_MIN_POS 0
 //#define I_MAX_POS 50
@@ -1577,8 +1577,8 @@
  * RAMPS-based boards use SERVO3_PIN for the first runout sensor.
  * For other boards you may need to define FIL_RUNOUT_PIN, FIL_RUNOUT2_PIN, etc.
  */
-#if DISABLED( USE_MKS_UI )
-#define FILAMENT_RUNOUT_SENSOR
+#if DISABLED(USE_MKS_UI)
+  #define FILAMENT_RUNOUT_SENSOR
 #endif
 #if ENABLED(FILAMENT_RUNOUT_SENSOR)
   #define FIL_RUNOUT_ENABLED_DEFAULT false // Enable the sensor on startup. Override with M412 followed by M500.
@@ -1824,11 +1824,11 @@
 #define LEVEL_BED_CORNERS
 
 #if ENABLED(LEVEL_BED_CORNERS)
-#if ANY(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE)
-  #define LEVEL_CORNERS_INSET_LFRB { 40, 30, 40, 30 } // (mm) Left, Front, Right, Back insets
-#else
-  #define LEVEL_CORNERS_INSET_LFRB { 30, 30, 30, 30 } // (mm) Left, Front, Right, Back insets
-#endif
+  #if ANY(FF_DREAMER_MACHINE, FF_INVENTOR_MACHINE)
+    #define LEVEL_CORNERS_INSET_LFRB { 40, 30, 40, 30 } // (mm) Left, Front, Right, Back insets
+  #else
+    #define LEVEL_CORNERS_INSET_LFRB { 30, 30, 30, 30 } // (mm) Left, Front, Right, Back insets
+  #endif
   #define LEVEL_CORNERS_HEIGHT      0.0   // (mm) Z height of nozzle at leveling points
   #define LEVEL_CORNERS_Z_HOP       5.0   // (mm) Z height of nozzle between leveling points
   #define LEVEL_CENTER_TOO              // Move to the center after the last corner
@@ -2785,13 +2785,13 @@
 // Usually paired with MKS Robin Nano V1.2
 //
 //#define MKS_ROBIN_TFT24
-#if ENABLED( USE_OLD_MARLIN_UI )
-#define TFT_CLASSIC_UI
-#elif ENABLED( USE_MKS_UI )
-#define TFT_LVGL_UI
-#undef LCD_BED_LEVELING
+#if ENABLED(USE_OLD_MARLIN_UI)
+  #define TFT_CLASSIC_UI
+#elif ENABLED(USE_MKS_UI)
+  #define TFT_LVGL_UI
+  #undef LCD_BED_LEVELING
 #else
-#define TFT_COLOR_UI
+  #define TFT_COLOR_UI
 #endif
 #define TFT_GENERIC
 #define TFT_INTERFACE_FSMC
