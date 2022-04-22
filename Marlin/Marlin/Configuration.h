@@ -843,7 +843,7 @@
 // extra connectors. Leave undefined any used for non-endstop and non-probe purposes.
 //#define USE_XMIN_PLUG
 //#define USE_YMIN_PLUG
-#if ANY(FF_CREATOR_MACHINE, FF_DREAMER_MACHINE, FF_DREAMER_NX_MACHINE) 
+#if ANY(FF_DREAMER_MACHINE, FF_DREAMER_NX_MACHINE) 
   #define USE_ZMIN_PLUG
 #endif
 //#define USE_IMIN_PLUG
