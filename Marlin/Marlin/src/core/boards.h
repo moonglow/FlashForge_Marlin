@@ -410,7 +410,7 @@
 #define BOARD_MKS_EAGLE               4236  // MKS Eagle (STM32F407VET6)
 #define BOARD_ARTILLERY_RUBY          4237  // Artillery Ruby (STM32F401RCT6)
 #define BOARD_FYSETC_SPIDER_V2_2      4238  // FYSETC Spider V2.2 (STM32F446VET6)
-#define BOARD_FF_MOTHERBOARD          4250  // FlashForge board ( STM32F407ZG )
+#define BOARD_FF_MOTHERBOARD          4250  // FlashForge board (STM32F407ZG)
 
 //
 // ARM Cortex M7
