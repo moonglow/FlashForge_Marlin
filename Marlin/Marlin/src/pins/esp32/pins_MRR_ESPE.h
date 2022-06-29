@@ -52,10 +52,11 @@
 // Enable I2S stepper stream
 //
 #define I2S_STEPPER_STREAM
-#define I2S_WS                                26
-#define I2S_BCK                               25
-#define I2S_DATA                              27
-#undef LIN_ADVANCE                                // Currently, I2S stream does not work with linear advance
+#if ENABLED(I2S_STEPPER_STREAM)
+  #define I2S_WS                              26
+  #define I2S_BCK                             25
+  #define I2S_DATA                            27
+#endif
 
 //
 // Steppers

@@ -43,7 +43,7 @@
  *
  *  If no PWM pin is defined then M3/M4 just turns it on.
  *
- *  At least 12.8KHz (50Hz * 256) is needed for Spindle PWM.
+ *  At least 12.8kHz (50Hz * 256) is needed for Spindle PWM.
  *  Hardware PWM is required on AVR. ISRs are too slow.
  *
  * NOTE: WGM for timers 3, 4, and 5 must be either Mode 1 or Mode 5.
@@ -66,6 +66,10 @@
  *  PWM duty cycle goes from 0 (off) to 255 (always on).
  */
 void GcodeSuite::M3_M4(const bool is_M4) {
+  #if LASER_SAFETY_TIMEOUT_MS > 0
+    reset_stepper_timeout(); // Reset timeout to allow subsequent G-code to power the laser (imm.)
+  #endif
+
   #if EITHER(SPINDLE_LASER_USE_PWM, SPINDLE_SERVO)
     auto get_s_power = [] {
       if (parser.seenval('S')) {

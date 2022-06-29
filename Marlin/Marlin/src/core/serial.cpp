@@ -73,10 +73,18 @@ void serial_print_P(PGM_P str) {
   while (const char c = pgm_read_byte(str++)) SERIAL_CHAR(c);
 }
 
-void serial_echo_start()  { static PGMSTR(echomagic, "echo:"); serial_print_P(echomagic); }
-void serial_error_start() { static PGMSTR(errormagic, "Error:"); serial_print_P(errormagic); }
+void serial_echo_start()  { serial_print(F("echo:")); }
+void serial_error_start() { serial_print(F("Error:")); }
 
 void serial_spaces(uint8_t count) { count *= (PROPORTIONAL_FONT_RATIO); while (count--) SERIAL_CHAR(' '); }
+
+void serial_offset(const_float_t v, const uint8_t sp/*=0*/) {
+  if (v == 0 && sp == 1)
+    SERIAL_CHAR(' ');
+  else if (v > 0 || (v == 0 && sp == 2))
+    SERIAL_CHAR('+');
+  SERIAL_DECIMAL(v);
+}
 
 void serial_ternary(const bool onoff, FSTR_P const pre, FSTR_P const on, FSTR_P const off, FSTR_P const post/*=nullptr*/) {
   if (pre) serial_print(pre);

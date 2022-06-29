@@ -105,6 +105,7 @@
 
 #define STR_ENQUEUEING                      "enqueueing \""
 #define STR_POWERUP                         "PowerUp"
+#define STR_POWEROFF                        "PowerOff"
 #define STR_EXTERNAL_RESET                  " External Reset"
 #define STR_BROWNOUT_RESET                  " Brown out Reset"
 #define STR_WATCHDOG_RESET                  " Watchdog Reset"
@@ -198,16 +199,20 @@
 #define STR_FILAMENT_CHANGE_INSERT_M108     "Insert filament and send M108"
 #define STR_FILAMENT_CHANGE_WAIT_M108       "Send M108 to resume"
 
-#define STR_STOP_BLTOUCH                    "!! STOP called because of BLTouch error - restart with M999"
-#define STR_STOP_UNHOMED                    "!! STOP called because of unhomed error - restart with M999"
-#define STR_KILL_INACTIVE_TIME              "!! KILL caused by too much inactive time - current command: "
-#define STR_KILL_BUTTON                     "!! KILL caused by KILL button/pin"
+#define STR_STOP_PRE                        "!! STOP called because of "
+#define STR_STOP_POST                       " error - restart with M999"
+#define STR_STOP_BLTOUCH                    "BLTouch"
+#define STR_STOP_UNHOMED                    "unhomed"
+#define STR_KILL_PRE                        "!! KILL caused by "
+#define STR_KILL_INACTIVE_TIME              "too much inactive time - current command: "
+#define STR_KILL_BUTTON                     "KILL button/pin"
 
 // temperature.cpp strings
-#define STR_PID_AUTOTUNE_START              "PID Autotune start"
-#define STR_PID_BAD_HEATER_ID               "PID Autotune failed! Bad heater id"
-#define STR_PID_TEMP_TOO_HIGH               "PID Autotune failed! Temperature too high"
-#define STR_PID_TIMEOUT                     "PID Autotune failed! timeout"
+#define STR_PID_AUTOTUNE                    "PID Autotune"
+#define STR_PID_AUTOTUNE_START              " start"
+#define STR_PID_BAD_HEATER_ID               " failed! Bad heater id"
+#define STR_PID_TEMP_TOO_HIGH               " failed! Temperature too high"
+#define STR_PID_TIMEOUT                     " failed! timeout"
 #define STR_BIAS                            " bias: "
 #define STR_D_COLON                         " d: "
 #define STR_T_MIN                           " min: "
@@ -218,7 +223,7 @@
 #define STR_KP                              " Kp: "
 #define STR_KI                              " Ki: "
 #define STR_KD                              " Kd: "
-#define STR_PID_AUTOTUNE_FINISHED           "PID Autotune finished! Put the last Kp, Ki and Kd constants from below into Configuration.h"
+#define STR_PID_AUTOTUNE_FINISHED           " finished! Put the last Kp, Ki and Kd constants from below into Configuration.h"
 #define STR_PID_DEBUG                       " PID_DEBUG "
 #define STR_PID_DEBUG_INPUT                 ": Input "
 #define STR_PID_DEBUG_OUTPUT                " Output "
@@ -227,6 +232,14 @@
 #define STR_PID_DEBUG_DTERM                 " dTerm "
 #define STR_PID_DEBUG_CTERM                 " cTerm "
 #define STR_INVALID_EXTRUDER_NUM            " - Invalid extruder number !"
+#define STR_MPC_AUTOTUNE                    "MPC Autotune"
+#define STR_MPC_AUTOTUNE_START              " start for " STR_E
+#define STR_MPC_AUTOTUNE_INTERRUPTED        " interrupted!"
+#define STR_MPC_AUTOTUNE_FINISHED           " finished! Put the constants below into Configuration.h"
+#define STR_MPC_COOLING_TO_AMBIENT          "Cooling to ambient"
+#define STR_MPC_HEATING_PAST_200            "Heating to over 200C"
+#define STR_MPC_MEASURING_AMBIENT           "Measuring ambient heatloss at "
+#define STR_MPC_TEMPERATURE_ERROR           "Temperature error"
 
 #define STR_HEATER_BED                      "bed"
 #define STR_HEATER_CHAMBER                  "chamber"
@@ -240,6 +253,7 @@
 #define STR_REDUNDANCY                      "Heater switched off. Temperature difference between temp sensors is too high !"
 #define STR_T_HEATING_FAILED                "Heating failed"
 #define STR_T_THERMAL_RUNAWAY               "Thermal Runaway"
+#define STR_T_MALFUNCTION                   "Thermal Malfunction"
 #define STR_T_MAXTEMP                       "MAXTEMP triggered"
 #define STR_T_MINTEMP                       "MINTEMP triggered"
 #define STR_ERR_PROBING_FAILED              "Probing Failed"
@@ -253,7 +267,7 @@
 #define STR_DEBUG_ERRORS                    "ERRORS"
 #define STR_DEBUG_DRYRUN                    "DRYRUN"
 #define STR_DEBUG_COMMUNICATION             "COMMUNICATION"
-#define STR_DEBUG_LEVELING                  "LEVELING"
+#define STR_DEBUG_DETAIL                    "DETAIL"
 
 #define STR_PRINTER_LOCKED                  "Printer locked! (Unlock with M511 or LCD)"
 #define STR_WRONG_PASSWORD                  "Incorrect Password"
@@ -301,10 +315,12 @@
 #define STR_MATERIAL_HEATUP                 "Material heatup parameters"
 #define STR_LCD_CONTRAST                    "LCD Contrast"
 #define STR_LCD_BRIGHTNESS                  "LCD Brightness"
+#define STR_DISPLAY_SLEEP                   "Display Sleep"
 #define STR_UI_LANGUAGE                     "UI Language"
 #define STR_Z_PROBE_OFFSET                  "Z-Probe Offset"
 #define STR_TEMPERATURE_UNITS               "Temperature Units"
 #define STR_USER_THERMISTORS                "User thermistors"
+#define STR_DELAYED_POWEROFF                "Delayed poweroff"
 
 //
 // Endstop Names used by Endstops::report_states
@@ -383,20 +399,14 @@
     #define STR_I_MIN "w_min"
     #define STR_I_MAX "w_max"
   #else
-    #define STR_I "A"
-    #define STR_I_MIN "a_min"
-    #define STR_I_MAX "a_max"
+    #error "AXIS4_NAME can only be one of 'A', 'B', 'C', 'U', 'V', or 'W'."
   #endif
 #else
   #define STR_I   ""
 #endif
 
 #if HAS_J_AXIS
-  #if AXIS5_NAME == 'A'
-    #define STR_J "A"
-    #define STR_J_MIN "a_min"
-    #define STR_J_MAX "a_max"
-  #elif AXIS5_NAME == 'B'
+  #if AXIS5_NAME == 'B'
     #define STR_J "B"
     #define STR_J_MIN "b_min"
     #define STR_J_MAX "b_max"
@@ -417,24 +427,14 @@
     #define STR_J_MIN "w_min"
     #define STR_J_MAX "w_max"
   #else
-    #define STR_J "B"
-    #define STR_J_MIN "b_min"
-    #define STR_J_MAX "b_max"
+    #error "AXIS5_NAME can only be one of 'B', 'C', 'U', 'V', or 'W'."
   #endif
 #else
   #define STR_J   ""
 #endif
 
 #if HAS_K_AXIS
-  #if AXIS6_NAME == 'A'
-    #define STR_K "A"
-    #define STR_K_MIN "a_min"
-    #define STR_K_MAX "a_max"
-  #elif AXIS6_NAME == 'B'
-    #define STR_K "B"
-    #define STR_K_MIN "b_min"
-    #define STR_K_MAX "b_max"
-  #elif AXIS6_NAME == 'C'
+  #if AXIS6_NAME == 'C'
     #define STR_K "C"
     #define STR_K_MIN "c_min"
     #define STR_K_MAX "c_max"
@@ -451,9 +451,7 @@
     #define STR_K_MIN "w_min"
     #define STR_K_MAX "w_max"
   #else
-    #define STR_K "C"
-    #define STR_K_MIN "c_min"
-    #define STR_K_MAX "c_max"
+    #error "AXIS6_NAME can only be one of 'C', 'U', 'V', or 'W'."
   #endif
 #else
   #define STR_K   ""
