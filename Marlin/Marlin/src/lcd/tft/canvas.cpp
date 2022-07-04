@@ -82,12 +82,12 @@ void CANVAS::AddText(uint16_t x, uint16_t y, uint16_t color, uint8_t *string, ui
   for (uint16_t i = 0 ; *(string + i) ; i++) {
     glyph_t *glyph = Glyph(string + i);
 #else
-  wchar_t wchar = 0;
+  lchar_t wchar = 0;
   while( *string ) {
     uint8_t ch;
     if( is_wchar )
     {
-      string = (uint8_t*)get_utf8_value_cb(string, read_byte_c, &wchar);
+      string = (uint8_t*)get_utf8_value_cb(string, read_byte_c, wchar);
       ch = uint8_t(wchar & 0x00FF);
     }
     else
