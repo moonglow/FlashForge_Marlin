@@ -23,7 +23,7 @@
 
 /* you must be sure what you know what you do :) */
 #define FF_FLASHAIR_FIX
-#define FF_RUSSIAN_FIX
+//#define FF_RUSSIAN_FIX
 #define M907_PROTECTION
 
 /* Select one of the printers below */
