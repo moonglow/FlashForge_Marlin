@@ -205,7 +205,7 @@
     // Directions are set up for MIXING_STEPPERS - like before.
     // Finding the right stepper may last up to MIXING_STEPPERS loops in get_next_stepper().
     //   These loops are a bit faster than advancing a bresenham counter.
-    // Always only one e-stepper is stepped.
+    // Always only one E stepper is stepped.
     #define MIN_ISR_LA_LOOP_CYCLES ((MIXING_STEPPERS) * (ISR_STEPPER_CYCLES))
   #else
     #define MIN_ISR_LA_LOOP_CYCLES ISR_STEPPER_CYCLES
@@ -250,8 +250,6 @@ typedef struct {
       #endif
     };
   };
-  constexpr ena_mask_t linear_bits() { return _BV(LINEAR_AXES) - 1; }
-  constexpr ena_mask_t e_bits() { return (_BV(EXTRUDERS) - 1) << LINEAR_AXES; }
 } stepper_flags_t;
 
 // All the stepper enable pins
@@ -320,7 +318,7 @@ class Stepper {
         #ifndef MOTOR_CURRENT_PWM_FREQUENCY
           #define MOTOR_CURRENT_PWM_FREQUENCY 31400
         #endif
-        #define MOTOR_CURRENT_COUNT LINEAR_AXES
+        #define MOTOR_CURRENT_COUNT 3
       #elif HAS_MOTOR_CURRENT_SPI
         static constexpr uint32_t digipot_count[] = DIGIPOT_MOTOR_CURRENT;
         #define MOTOR_CURRENT_COUNT COUNT(Stepper::digipot_count)
@@ -433,25 +431,6 @@ class Stepper {
     // Current stepper motor directions (+1 or -1)
     static xyze_int8_t count_direction;
 
-    #if ENABLED(LASER_POWER_INLINE_TRAPEZOID)
-
-      typedef struct {
-        bool enabled;       // Trapezoid needed flag (i.e., laser on, planner in control)
-        uint8_t cur_power;  // Current laser power
-        bool cruise_set;    // Power set up for cruising?
-
-        #if ENABLED(LASER_POWER_INLINE_TRAPEZOID_CONT)
-          uint16_t till_update;     // Countdown to the next update
-        #else
-          uint32_t last_step_count, // Step count from the last update
-                   acc_step_count;  // Bresenham counter for laser accel/decel
-        #endif
-      } stepper_laser_t;
-
-      static stepper_laser_t laser_trap;
-
-    #endif
-
   public:
     // Initialize stepper hardware
     static void init();
@@ -513,8 +492,7 @@ class Stepper {
     // Discard current block and free any resources
     FORCE_INLINE static void discard_current_block() {
       #if ENABLED(DIRECT_STEPPING)
-        if (IS_PAGE(current_block))
-          page_manager.free_page(current_block->page_idx);
+        if (current_block->is_page()) page_manager.free_page(current_block->page_idx);
       #endif
       current_block = nullptr;
       axis_did_move = 0;

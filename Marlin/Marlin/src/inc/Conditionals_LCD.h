@@ -666,7 +666,7 @@
 #endif
 
 /**
- * Number of Linear Axes (e.g., XYZ)
+ * Number of Linear Axes (e.g., XYZIJK)
  * All the logical axes except for the tool (E) axis
  */
 #ifdef LINEAR_AXES
@@ -811,48 +811,6 @@
   #undef MANUAL_K_HOME_POS
 #endif
 
-#if !HAS_U_AXIS
-  #undef ENDSTOPPULLUP_UMIN
-  #undef ENDSTOPPULLUP_UMAX
-  #undef U_MIN_ENDSTOP_INVERTING
-  #undef U_MAX_ENDSTOP_INVERTING
-  #undef U_ENABLE_ON
-  #undef DISABLE_U
-  #undef INVERT_U_DIR
-  #undef U_HOME_DIR
-  #undef U_MIN_POS
-  #undef U_MAX_POS
-  #undef MANUAL_U_HOME_POS
-#endif
-
-#if !HAS_V_AXIS
-  #undef ENDSTOPPULLUP_VMIN
-  #undef ENDSTOPPULLUP_VMAX
-  #undef V_MIN_ENDSTOP_INVERTING
-  #undef V_MAX_ENDSTOP_INVERTING
-  #undef V_ENABLE_ON
-  #undef DISABLE_V
-  #undef INVERT_V_DIR
-  #undef V_HOME_DIR
-  #undef V_MIN_POS
-  #undef V_MAX_POS
-  #undef MANUAL_V_HOME_POS
-#endif
-
-#if !HAS_W_AXIS
-  #undef ENDSTOPPULLUP_WMIN
-  #undef ENDSTOPPULLUP_WMAX
-  #undef W_MIN_ENDSTOP_INVERTING
-  #undef W_MAX_ENDSTOP_INVERTING
-  #undef W_ENABLE_ON
-  #undef DISABLE_W
-  #undef INVERT_W_DIR
-  #undef W_HOME_DIR
-  #undef W_MIN_POS
-  #undef W_MAX_POS
-  #undef MANUAL_W_HOME_POS
-#endif
-
 #ifdef X2_DRIVER_TYPE
   #define HAS_X2_STEPPER 1
   // Dual X Carriage isn't known yet. TODO: Consider moving it to Configuration.h.
@@ -863,7 +821,23 @@
 #endif
 
 /**
- * Number of Logical Axes (e.g., XYZE)
+ * Number of Primary Linear Axes (e.g., XYZ)
+ * X, XY, or XYZ axes. Excluding duplicate axes (X2, Y2. Z2. Z3, Z4)
+ */
+#if HAS_I_AXIS
+  #define PRIMARY_LINEAR_AXES 3
+#else
+  #define PRIMARY_LINEAR_AXES LINEAR_AXES
+#endif
+
+/**
+ * Number of Secondary Axes (e.g., IJK)
+ * All linear/rotational axes between XYZ and E.
+ */
+#define SECONDARY_AXES SUB3(LINEAR_AXES)
+
+/**
+ * Number of Logical Axes (e.g., XYZIJKE)
  * All the logical axes that can be commanded directly by G-code.
  * Delta maps stepper-specific values to ABC steppers.
  */
@@ -1310,6 +1284,29 @@
   #define HAS_ETHERNET 1
 #endif
 
+// Fallback axis inverting
+#ifndef INVERT_X_DIR
+  #define INVERT_X_DIR false
+#endif
+#if HAS_Y_AXIS && !defined(INVERT_Y_DIR)
+  #define INVERT_Y_DIR false
+#endif
+#if HAS_Z_AXIS && !defined(INVERT_Z_DIR)
+  #define INVERT_Z_DIR false
+#endif
+#if HAS_I_AXIS && !defined(INVERT_I_DIR)
+  #define INVERT_I_DIR false
+#endif
+#if HAS_J_AXIS && !defined(INVERT_J_DIR)
+  #define INVERT_J_DIR false
+#endif
+#if HAS_K_AXIS && !defined(INVERT_K_DIR)
+  #define INVERT_K_DIR false
+#endif
+#if HAS_EXTRUDERS && !defined(INVERT_E_DIR)
+  #define INVERT_E_DIR false
+#endif
+
 /**
  * This setting is also used by M109 when trying to calculate
  * a ballpark safe margin to prevent wait-forever situation.
@@ -1389,8 +1386,13 @@
 #elif ENABLED(TFT_RES_1024x600)
   #define TFT_WIDTH  1024
   #define TFT_HEIGHT 600
-  #define GRAPHICAL_TFT_UPSCALE 6
-  #define TFT_PIXEL_OFFSET_X 120
+  #if ENABLED(TOUCH_SCREEN)
+    #define GRAPHICAL_TFT_UPSCALE 6
+    #define TFT_PIXEL_OFFSET_X 120
+  #else
+    #define GRAPHICAL_TFT_UPSCALE 8
+    #define TFT_PIXEL_OFFSET_X 0
+  #endif
 #endif
 
 // FSMC/SPI TFT Panels using standard HAL/tft/tft_(fsmc|spi|ltdc).h

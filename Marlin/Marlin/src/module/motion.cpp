@@ -293,6 +293,73 @@ void report_current_position_projected() {
 
 #endif
 
+#if IS_KINEMATIC
+
+  bool position_is_reachable(const_float_t rx, const_float_t ry, const float inset/*=0*/) {
+
+    bool can_reach;
+
+    #if ENABLED(DELTA)
+
+      can_reach = HYPOT2(rx, ry) <= sq(DELTA_PRINTABLE_RADIUS - inset + fslop);
+
+    #elif ENABLED(AXEL_TPARA)
+
+      const float R2 = HYPOT2(rx - TPARA_OFFSET_X, ry - TPARA_OFFSET_Y);
+      can_reach = (
+        R2 <= sq(L1 + L2) - inset
+        #if MIDDLE_DEAD_ZONE_R > 0
+          && R2 >= sq(float(MIDDLE_DEAD_ZONE_R))
+        #endif
+      );
+
+    #elif IS_SCARA
+
+      const float R2 = HYPOT2(rx - SCARA_OFFSET_X, ry - SCARA_OFFSET_Y);
+      can_reach = (
+        R2 <= sq(L1 + L2) - inset
+        #if MIDDLE_DEAD_ZONE_R > 0
+          && R2 >= sq(float(MIDDLE_DEAD_ZONE_R))
+        #endif
+      );
+
+    #elif ENABLED(POLARGRAPH)
+
+      const float d1 = rx - (draw_area_min.x),
+                  d2 = (draw_area_max.x) - rx,
+                   y = ry - (draw_area_max.y),
+                   a = HYPOT(d1, y),
+                   b = HYPOT(d2, y);
+
+      can_reach = (
+           a < polargraph_max_belt_len + 1
+        && b < polargraph_max_belt_len + 1
+        && (a + b) > _MIN(draw_area_size.x, draw_area_size.y)
+      );
+
+    #endif
+
+    return can_reach;
+  }
+
+#else // CARTESIAN
+
+  // Return true if the given position is within the machine bounds.
+  bool position_is_reachable(const_float_t rx, const_float_t ry) {
+    if (!COORDINATE_OKAY(ry, Y_MIN_POS - fslop, Y_MAX_POS + fslop)) return false;
+    #if ENABLED(DUAL_X_CARRIAGE)
+      if (active_extruder)
+        return COORDINATE_OKAY(rx, X2_MIN_POS - fslop, X2_MAX_POS + fslop);
+      else
+        return COORDINATE_OKAY(rx, X1_MIN_POS - fslop, X1_MAX_POS + fslop);
+    #else
+      return COORDINATE_OKAY(rx, X_MIN_POS - fslop, X_MAX_POS + fslop);
+    #endif
+  }
+
+#endif // CARTESIAN
+
+
 void home_if_needed(const bool keeplev/*=false*/) {
   if (!all_axes_trusted()) gcode.home_all_axes(keeplev);
 }
@@ -476,15 +543,11 @@ void do_blocking_move_to(LINEAR_AXIS_ARGS(const float), const_feedRate_t fr_mm_s
   #if HAS_Z_AXIS
     const feedRate_t z_feedrate = fr_mm_s ?: homing_feedrate(Z_AXIS);
   #endif
-  #if HAS_I_AXIS
-    const feedRate_t i_feedrate = fr_mm_s ?: homing_feedrate(I_AXIS);
-  #endif
-  #if HAS_J_AXIS
-    const feedRate_t j_feedrate = fr_mm_s ?: homing_feedrate(J_AXIS);
-  #endif
-  #if HAS_K_AXIS
-    const feedRate_t k_feedrate = fr_mm_s ?: homing_feedrate(K_AXIS);
-  #endif
+  SECONDARY_AXIS_CODE(
+    const feedRate_t i_feedrate = fr_mm_s ?: homing_feedrate(I_AXIS),
+    const feedRate_t j_feedrate = fr_mm_s ?: homing_feedrate(J_AXIS),
+    const feedRate_t k_feedrate = fr_mm_s ?: homing_feedrate(K_AXIS)
+  );
 
   #if IS_KINEMATIC
     if (!position_is_reachable(x, y)) return;
@@ -678,11 +741,11 @@ void restore_feedrate_and_scaling() {
 
   // Software Endstops are based on the configured limits.
   #define _AMIN(A) A##_MIN_POS
-  #define _AMAX(A) (_AXIS(A) < Z_AXIS ? A##_MAX_BED : A##_MAX_POS)
+  #define _AMAX(A) A##_MAX_POS
   soft_endstops_t soft_endstop = {
     true, false,
     { MAPLIST(_AMIN, MAIN_AXIS_NAMES) },
-    { MAPLIST(_AMAX, MAIN_AXIS_NAMES) }
+    { MAPLIST(_AMAX, MAIN_AXIS_NAMES) },
   };
 
   /**
@@ -875,7 +938,7 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
     next_idle_ms = ms + 200UL;
     return idle();
   }
-  thermalManager.manage_heater();  // Returns immediately on most calls
+  thermalManager.task();  // Returns immediately on most calls
 }
 
 #if IS_KINEMATIC
@@ -1291,10 +1354,10 @@ void prepare_line_to_destination() {
 
 #if HAS_ENDSTOPS
 
-  linear_axis_bits_t axis_homed, axis_trusted; // = 0
+  main_axes_bits_t axes_homed, axes_trusted; // = 0
 
-  linear_axis_bits_t axes_should_home(linear_axis_bits_t axis_bits/*=linear_bits*/) {
-    auto set_should = [](linear_axis_bits_t &b, AxisEnum a) {
+  main_axes_bits_t axes_should_home(main_axes_bits_t axis_bits/*=main_axes_mask*/) {
+    auto set_should = [](main_axes_bits_t &b, AxisEnum a) {
       if (TEST(b, a) && TERN(HOME_AFTER_DEACTIVATE, axis_is_trusted, axis_was_homed)(a))
         CBI(b, a);
     };
@@ -1306,20 +1369,12 @@ void prepare_line_to_destination() {
     return axis_bits;
   }
 
-  bool homing_needed_error(linear_axis_bits_t axis_bits/*=linear_bits*/) {
+  bool homing_needed_error(main_axes_bits_t axis_bits/*=main_axes_mask*/) {
     if ((axis_bits = axes_should_home(axis_bits))) {
       PGM_P home_first = GET_TEXT(MSG_HOME_FIRST);
-      char msg[strlen_P(home_first)+1];
-      sprintf_P(msg, home_first,
-        LINEAR_AXIS_LIST(
-          TEST(axis_bits, X_AXIS) ? "X" : "",
-          TEST(axis_bits, Y_AXIS) ? "Y" : "",
-          TEST(axis_bits, Z_AXIS) ? "Z" : "",
-          TEST(axis_bits, I_AXIS) ? STR_I : "",
-          TEST(axis_bits, J_AXIS) ? STR_J : "",
-          TEST(axis_bits, K_AXIS) ? STR_K : ""
-        )
-      );
+      char msg[30];
+      #define _AXIS_CHAR(N) TEST(axis_bits, _AXIS(N)) ? STR_##N : ""
+      sprintf_P(msg, home_first, MAPLIST(_AXIS_CHAR, MAIN_AXIS_NAMES));
       SERIAL_ECHO_START();
       SERIAL_ECHOLN(msg);
       ui.set_status(msg);

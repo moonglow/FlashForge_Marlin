@@ -29,10 +29,10 @@ void safe_delay(millis_t ms) {
   while (ms > 50) {
     ms -= 50;
     delay(50);
-    thermalManager.manage_heater();
+    thermalManager.task();
   }
   delay(ms);
-  thermalManager.manage_heater(); // This keeps us safe if too many small safe_delay() calls are made
+  thermalManager.task(); // This keeps us safe if too many small safe_delay() calls are made
 }
 
 // A delay to provide brittle hosts time to receive bytes
@@ -51,7 +51,7 @@ void safe_delay(millis_t ms) {
 
   #include "../module/probe.h"
   #include "../module/motion.h"
-  #include "../module/stepper.h"
+  #include "../module/planner.h"
   #include "../libs/numtostr.h"
   #include "../feature/bedlevel/bedlevel.h"
 
@@ -126,7 +126,7 @@ void safe_delay(millis_t ms) {
         #if ABL_PLANAR
           SERIAL_ECHOPGM("ABL Adjustment");
           LOOP_LINEAR_AXES(a) {
-            SERIAL_CHAR(' ', AXIS_CHAR(a));
+            SERIAL_ECHOPGM_P((PGM_P)pgm_read_ptr(&SP_AXIS_STR[a]));
             serial_offset(planner.get_axis_position_mm(AxisEnum(a)) - current_position[a]);
           }
         #else

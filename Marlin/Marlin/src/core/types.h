@@ -66,6 +66,12 @@ struct IF<true, L, R> { typedef L type; };
 
 #define LOGICAL_AXES_STRING LOGICAL_AXIS_GANG("E", "X", "Y", "Z", STR_I, STR_J, STR_K)
 
+#define XYZ_GANG(V...) GANG_N(PRIMARY_LINEAR_AXES, V)
+#define XYZ_CODE(V...) CODE_N(PRIMARY_LINEAR_AXES, V)
+
+#define SECONDARY_AXIS_GANG(V...) GANG_N(SECONDARY_AXES, V)
+#define SECONDARY_AXIS_CODE(V...) CODE_N(SECONDARY_AXES, V)
+
 #if HAS_EXTRUDERS
   #define LIST_ITEM_E(N) , N
   #define CODE_ITEM_E(N) ; N
@@ -126,9 +132,9 @@ typedef struct AxisFlags {
   void set(const int n, const bool onoff)  { flags.set(n, onoff); }
   void clear(const int n)                  { flags.clear(n); }
   bool test(const int n) const             { return flags.test(n); }
-        bool operator[](const int n)       { return flags[n]; }
-  const bool operator[](const int n) const { return flags[n]; }
-  const int size() const                   { return sizeof(flags); }
+  bool operator[](const int n)             { return flags[n]; }
+  bool operator[](const int n) const       { return flags[n]; }
+  int size() const                         { return sizeof(flags); }
 } axis_flags_t;
 
 //

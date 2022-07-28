@@ -26,8 +26,11 @@
 
 #include "../gcode.h"
 #include "../../module/motion.h"
-#include "../../module/stepper.h"
 #include "../../module/endstops.h"
+
+#if ANY(HAS_MOTOR_CURRENT_SPI, HAS_MOTOR_CURRENT_PWM, HAS_TRINAMIC_CONFIG)
+  #include "../../module/stepper.h"
+#endif
 
 #if HAS_LEVELING
   #include "../../feature/bedlevel/bedlevel.h"
@@ -79,7 +82,7 @@ void GcodeSuite::G34() {
     stepper.set_digipot_current(Z_AXIS, target_current);
   #elif HAS_MOTOR_CURRENT_PWM
     const uint16_t target_current = parser.intval('S', GANTRY_CALIBRATION_CURRENT);
-    const uint32_t previous_current = stepper.motor_current_setting[Z_AXIS];
+    const uint32_t previous_current = stepper.motor_current_setting[1]; // Z
     stepper.set_digipot_current(1, target_current);
   #elif HAS_MOTOR_CURRENT_DAC
     const float target_current = parser.floatval('S', GANTRY_CALIBRATION_CURRENT);
