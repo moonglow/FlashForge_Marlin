@@ -286,7 +286,7 @@
    * and/or decrease WATCH_TEMP_INCREASE. WATCH_TEMP_INCREASE should not be set
    * below 2.
    */
-  #define WATCH_TEMP_PERIOD  20               // Seconds
+  #define WATCH_TEMP_PERIOD  40               // Seconds
   #define WATCH_TEMP_INCREASE 2               // Degrees Celsius
 #endif
 
@@ -3852,7 +3852,7 @@
  *
  * Execute certain G-code commands immediately after power-on.
  */
-#define STARTUP_COMMANDS "M141 S45"
+#define STARTUP_COMMANDS ""
 
 /**
  * G-code Macros
@@ -3888,8 +3888,11 @@
   #define MAIN_MENU_ITEM_2_GCODE  "M141 S0"
   //#define MAIN_MENU_ITEM_2_CONFIRM          // Show a confirmation dialog before this action
 
-  #define MAIN_MENU_ITEM_3_DESC "Bed leveling (3-point)"
+  #define MAIN_MENU_ITEM_3_DESC   "Bed leveling (3-point)"
   #include "BedLevelingScript.h"
+
+  #define MAIN_MENU_ITEM_4_DESC   "Calibrate Touch Screen"
+  #define MAIN_MENU_ITEM_4_GCODE    "M995"
 #endif
 
 // Custom Menu: Configuration Menu
