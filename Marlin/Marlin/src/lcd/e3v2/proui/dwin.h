@@ -265,7 +265,9 @@ void Draw_Motion_Menu();
   void Draw_Preheat1_Menu();
   void Draw_Preheat2_Menu();
   void Draw_Preheat3_Menu();
-  void Draw_HotendPID_Menu();
+  #if ENABLED(PIDTEMP)
+    void Draw_HotendPID_Menu();
+  #endif
 #endif
 void Draw_Temperature_Menu();
 void Draw_MaxSpeed_Menu();
@@ -274,7 +276,7 @@ void Draw_MaxAccel_Menu();
   void Draw_MaxJerk_Menu();
 #endif
 void Draw_Steps_Menu();
-#if HAS_HEATED_BED
+#if ENABLED(PIDTEMPBED)
   void Draw_BedPID_Menu();
 #endif
 #if EITHER(HAS_BED_PROBE, BABYSTEPPING)
