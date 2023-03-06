@@ -1,4 +1,4 @@
-#  FlashForge/Dremel Marlin 2.0.9.5
+#  FlashForge/Dremel Marlin 2.1.2
 | Classic UI | Color UI | MKS UI |
 |----------|----------|----------|
 |![classic_ui_mini](https://user-images.githubusercontent.com/1655387/117437507-fb0e9b80-af38-11eb-9fb9-b309543220a1.jpg)|![color_ui_mini](https://user-images.githubusercontent.com/1655387/117437559-08c42100-af39-11eb-8d13-ac0bb497c5ca.jpg)|![mks_ui](https://user-images.githubusercontent.com/1655387/120157267-83602380-c1fb-11eb-9f93-14aecdee5a28.jpg)|
@@ -13,6 +13,7 @@
 - [x] Stepper motor current setup ( MCP4018 digital potentiometer )
 - [x] Print cooling fan, chamber fan, endstops, stepper motor signals control
 - [x] External SD card
+- [x] Internal SD card (Not 100% functional yet)
 - [x] USB ( virtual serial port )
 
 #### What's not works?

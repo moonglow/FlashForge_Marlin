@@ -148,7 +148,7 @@ static const uint16_t ff_otm4802_init[] = {
 #endif
 
 void TFT_IO::InitTFT() {
-if (lcd_id != 0xFFFFFFFF) return;
+  if (lcd_id != 0xFFFFFFFF) return;
 
   #if PIN_EXISTS(TFT_BACKLIGHT)
     OUT_WRITE(TFT_BACKLIGHT_PIN, LOW);
@@ -348,7 +348,7 @@ void TFT_IO::write_esc_sequence(const uint16_t *Sequence) {
       continue;
     }
     data = *Sequence++;
-    if (data == 0x7FFF) return;
+    if (data == 0x7FFF) break;
     if (data == 0xFFFF)
       io.WriteData(0xFFFF);
     else if (data & 0x8000)

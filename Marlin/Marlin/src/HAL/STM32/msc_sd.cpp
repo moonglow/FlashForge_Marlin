@@ -37,13 +37,21 @@ class Sd2CardUSBMscHandler : public USBMscHandler {
 public:
   DiskIODriver* diskIODriver() {
     #if ENABLED(MULTI_VOLUME)
-      #if SHARED_VOLUME_IS(SD_ONBOARD)
-        return &card.media_driver_sdcard;
-      #elif SHARED_VOLUME_IS(USB_FLASH_DRIVE)
-        return &card.media_driver_usbFlash;
+      #if ENABLED(FF_MULTI_SD)
+        #if SHARED_VOLUME_IS(SD_ONBOARD)
+          return &card.media.driver_internal_sdcard;
+        #elif SHARED_VOLUME_IS(SD_EXTERNAL)
+          return &card.media.driver_external_sdcard;
+      #else
+        #if SHARED_VOLUME_IS(SD_ONBOARD)
+          return &card.media_driver_sdcard;
+        #elif SHARED_VOLUME_IS(USB_FLASH_DRIVE)
+          return &card.media_driver_usbFlash;
+        #endif
       #endif
-    #else
-      return card.diskIODriver();
+      #else
+        return card.diskIODriver();
+      #endif
     #endif
   }
 

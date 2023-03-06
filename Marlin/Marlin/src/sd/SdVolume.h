@@ -38,10 +38,16 @@
   #include "usb_flashdrive/Sd2Card_FlashDrive.h"
 #endif
 
-#if NEED_SD2CARD_SDIO
+/* We need both SDIO + SPI for dual SD mode */
+#if ENABLED(FF_MULTI_SD)
   #include "Sd2Card_sdio.h"
-#elif NEED_SD2CARD_SPI
   #include "Sd2Card.h"
+#else
+  #if NEED_SD2CARD_SDIO
+    #include "Sd2Card_sdio.h"
+  #elif NEED_SD2CARD_SPI
+    #include "Sd2Card.h"
+  #endif
 #endif
 
 #include "SdFatConfig.h"

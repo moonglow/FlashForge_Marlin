@@ -48,7 +48,7 @@
 
 //#define DEBUG_POWER_LOSS_RECOVERY
 //#define SAVE_EACH_CMD_MODE
-//#define SAVE_INFO_INTERVAL_MS 1000
+//#define SAVE_INFO_INTERVAL_MS 0
 
 typedef struct {
   uint8_t valid_head;
@@ -153,6 +153,9 @@ class PrintJobRecovery {
     static void prepare();
 
     static void setup() {
+      #if PIN_EXISTS(OUTAGECON)
+        OUT_WRITE(OUTAGECON_PIN, HIGH);
+      #endif
       #if PIN_EXISTS(POWER_LOSS)
         #if ENABLED(POWER_LOSS_PULLUP)
           SET_INPUT_PULLUP(POWER_LOSS_PIN);

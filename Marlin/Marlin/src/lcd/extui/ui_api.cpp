@@ -375,9 +375,9 @@ namespace ExtUI {
   bool canMove(const axis_t axis) {
     switch (axis) {
       #if IS_KINEMATIC || ENABLED(NO_MOTION_BEFORE_HOMING)
-        case X: return axis_should_home(X_AXIS);
-        OPTCODE(HAS_Y_AXIS, case Y: return axis_should_home(Y_AXIS))
-        OPTCODE(HAS_Z_AXIS, case Z: return axis_should_home(Z_AXIS))
+        case X: return !axis_should_home(X_AXIS);
+        OPTCODE(HAS_Y_AXIS, case Y: return !axis_should_home(Y_AXIS))
+        OPTCODE(HAS_Z_AXIS, case Z: return !axis_should_home(Z_AXIS))
       #else
         case X: case Y: case Z: return true;
       #endif
@@ -419,6 +419,15 @@ namespace ExtUI {
         #endif
         #if AXIS_IS_TMC(K)
           case K: return stepperK.getMilliamps();
+        #endif
+        #if AXIS_IS_TMC(U)
+          case U: return stepperU.getMilliamps();
+        #endif
+        #if AXIS_IS_TMC(V)
+          case V: return stepperV.getMilliamps();
+        #endif
+        #if AXIS_IS_TMC(W)
+          case W: return stepperW.getMilliamps();
         #endif
         #if AXIS_IS_TMC(X2)
           case X2: return stepperX2.getMilliamps();
@@ -489,6 +498,15 @@ namespace ExtUI {
         #if AXIS_IS_TMC(K)
           case K: stepperK.rms_current(constrain(mA, 400, 1500)); break;
         #endif
+        #if AXIS_IS_TMC(U)
+          case U: stepperU.rms_current(constrain(mA, 400, 1500)); break;
+        #endif
+        #if AXIS_IS_TMC(V)
+          case V: stepperV.rms_current(constrain(mA, 400, 1500)); break;
+        #endif
+        #if AXIS_IS_TMC(W)
+          case W: stepperW.rms_current(constrain(mA, 400, 1500)); break;
+        #endif
         #if AXIS_IS_TMC(X2)
           case X2: stepperX2.rms_current(constrain(mA, 400, 1500)); break;
         #endif
@@ -546,6 +564,9 @@ namespace ExtUI {
         OPTCODE(I_SENSORLESS,  case I:  return stepperI.homing_threshold())
         OPTCODE(J_SENSORLESS,  case J:  return stepperJ.homing_threshold())
         OPTCODE(K_SENSORLESS,  case K:  return stepperK.homing_threshold())
+        OPTCODE(U_SENSORLESS,  case U:  return stepperU.homing_threshold())
+        OPTCODE(V_SENSORLESS,  case V:  return stepperV.homing_threshold())
+        OPTCODE(W_SENSORLESS,  case W:  return stepperW.homing_threshold())
         OPTCODE(X2_SENSORLESS, case X2: return stepperX2.homing_threshold())
         OPTCODE(Y2_SENSORLESS, case Y2: return stepperY2.homing_threshold())
         OPTCODE(Z2_SENSORLESS, case Z2: return stepperZ2.homing_threshold())
@@ -574,6 +595,15 @@ namespace ExtUI {
         #endif
         #if K_SENSORLESS
           case K: stepperK.homing_threshold(value); break;
+        #endif
+        #if U_SENSORLESS
+          case U: stepperU.homing_threshold(value); break;
+        #endif
+        #if V_SENSORLESS
+          case V: stepperV.homing_threshold(value); break;
+        #endif
+        #if W_SENSORLESS
+          case W: stepperW.homing_threshold(value); break;
         #endif
         #if X2_SENSORLESS
           case X2: stepperX2.homing_threshold(value); break;
@@ -682,17 +712,17 @@ namespace ExtUI {
 
   #if ENABLED(POWER_LOSS_RECOVERY)
     bool getPowerLossRecoveryEnabled()                 { return recovery.enabled; }
-    void setPowerLossRecoveryEnabled(const bool value) {  recovery.enable(value); }
+    void setPowerLossRecoveryEnabled(const bool value) { recovery.enable(value); }
   #endif
 
   #if ENABLED(LIN_ADVANCE)
     float getLinearAdvance_mm_mm_s(const extruder_t extruder) {
-      return (extruder < EXTRUDERS) ? planner.extruder_advance_K[extruder - E0] : 0;
+      return (extruder < EXTRUDERS) ? planner.extruder_advance_K[E_INDEX_N(extruder - E0)] : 0;
     }
 
     void setLinearAdvance_mm_mm_s(const_float_t value, const extruder_t extruder) {
       if (extruder < EXTRUDERS)
-        planner.extruder_advance_K[extruder - E0] = constrain(value, 0, 10);
+        planner.extruder_advance_K[E_INDEX_N(extruder - E0)] = constrain(value, 0, 10);
     }
   #endif
 

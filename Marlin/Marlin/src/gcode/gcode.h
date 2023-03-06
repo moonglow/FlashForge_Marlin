@@ -114,7 +114,7 @@
  * M43  - Display pin status, watch pins for changes, watch endstops & toggle LED, Z servo probe test, toggle pins (Requires PINS_DEBUGGING)
  * M48  - Measure Z Probe repeatability: M48 P<points> X<pos> Y<pos> V<level> E<engage> L<legs> S<chizoid>. (Requires Z_MIN_PROBE_REPEATABILITY_TEST)
  *
- * M73  - Set the progress percentage. (Requires LCD_SET_PROGRESS_MANUALLY)
+ * M73  - Set the progress percentage. (Requires SET_PROGRESS_MANUALLY)
  * M75  - Start the print job timer.
  * M76  - Pause the print job timer.
  * M77  - Stop the print job timer.
@@ -131,6 +131,8 @@
  * M92  - Set planner.settings.axis_steps_per_mm for one or more axes.
  *
  * M100 - Watch Free Memory (for debugging) (Requires M100_FREE_MEMORY_WATCHER)
+ *
+ * M102 - Configure Bed Distance Sensor. (Requires BD_SENSOR)
  *
  * M104 - Set extruder target temp.
  * M105 - Report current temperatures.
@@ -155,7 +157,7 @@
  * M120 - Enable endstops detection.
  * M121 - Disable endstops detection.
  *
- * M122 - Debug stepper (Requires at least one _DRIVER_TYPE defined as TMC2130/2160/5130/5160/2208/2209/2660 or L6470)
+ * M122 - Debug stepper (Requires at least one _DRIVER_TYPE defined as TMC2130/2160/5130/5160/2208/2209/2660)
  * M123 - Report fan tachometers. (Requires En_FAN_TACHO_PIN) Optionally set auto-report interval. (Requires AUTO_REPORT_FANS)
  * M125 - Save current position and move to filament change position. (Requires PARK_HEAD_ON_PAUSE)
  *
@@ -257,6 +259,7 @@
  * M554 - Get or set IP gateway. (Requires enabled Ethernet port)
  * M569 - Enable stealthChop on an axis. (Requires at least one _DRIVER_TYPE to be TMC2130/2160/2208/2209/5130/5160)
  * M575 - Change the serial baud rate. (Requires BAUD_RATE_GCODE)
+ * M593 - Get or set input shaping parameters. (Requires INPUT_SHAPING_[XY])
  * M600 - Pause for filament change: "M600 X<pos> Y<pos> Z<raise> E<first_retract> L<later_retract>". (Requires ADVANCED_PAUSE_FEATURE)
  * M603 - Configure filament change: "M603 T<tool> U<unload_length> L<load_length>". (Requires ADVANCED_PAUSE_FEATURE)
  * M605 - Set Dual X-Carriage movement mode: "M605 S<mode> [X<x_offset>] [R<temp_offset>]". (Requires DUAL_X_CARRIAGE)
@@ -287,7 +290,7 @@
  * M871 - Print/reset/clear first layer temperature offset values. (Requires PTC_PROBE, PTC_BED, or PTC_HOTEND)
  * M876 - Handle Prompt Response. (Requires HOST_PROMPT_SUPPORT and not EMERGENCY_PARSER)
  * M900 - Get or Set Linear Advance K-factor. (Requires LIN_ADVANCE)
- * M906 - Set or get motor current in milliamps using axis codes XYZE, etc. Report values if no axis codes given. (Requires at least one _DRIVER_TYPE defined as TMC2130/2160/5130/5160/2208/2209/2660 or L6470)
+ * M906 - Set or get motor current in milliamps using axis codes XYZE, etc. Report values if no axis codes given. (Requires at least one _DRIVER_TYPE defined as TMC2130/2160/5130/5160/2208/2209/2660)
  * M907 - Set digital trimpot motor current using axis codes. (Requires a board with digital trimpots)
  * M908 - Control digital trimpot directly. (Requires HAS_MOTOR_CURRENT_DAC or DIGIPOTSS_PIN)
  * M909 - Print digipot/DAC current value. (Requires HAS_MOTOR_CURRENT_DAC)
@@ -296,9 +299,6 @@
  * M912 - Clear stepper driver overtemperature pre-warn condition flag. (Requires at least one _DRIVER_TYPE defined as TMC2130/2160/5130/5160/2208/2209/2660)
  * M913 - Set HYBRID_THRESHOLD speed. (Requires HYBRID_THRESHOLD)
  * M914 - Set StallGuard sensitivity. (Requires SENSORLESS_HOMING or SENSORLESS_PROBING)
- * M916 - L6470 tuning: Increase KVAL_HOLD until thermal warning. (Requires at least one _DRIVER_TYPE L6470)
- * M917 - L6470 tuning: Find minimum current thresholds. (Requires at least one _DRIVER_TYPE L6470)
- * M918 - L6470 tuning: Increase speed until max or error. (Requires at least one _DRIVER_TYPE L6470)
  * M919 - Get or Set motor Chopper Times (time_off, hysteresis_end, hysteresis_start) using axis codes XYZE, etc. If no parameters are given, report. (Requires at least one _DRIVER_TYPE defined as TMC2130/2160/5130/5160/2208/2209/2660)
  * M951 - Set Magnetic Parking Extruder parameters. (Requires MAGNETIC_PARKING_EXTRUDER)
  * M3426 - Read MCP3426 ADC over I2C. (Requires HAS_MCP3426_ADC)
@@ -340,7 +340,7 @@
 #endif
 
 enum AxisRelative : uint8_t {
-  LOGICAL_AXIS_LIST(REL_E, REL_X, REL_Y, REL_Z, REL_I, REL_J, REL_K)
+  LOGICAL_AXIS_LIST(REL_E, REL_X, REL_Y, REL_Z, REL_I, REL_J, REL_K, REL_U, REL_V, REL_W)
   #if HAS_EXTRUDERS
     , E_MODE_ABS, E_MODE_REL
   #endif
@@ -366,7 +366,8 @@ public:
     axis_relative = rel ? (0 LOGICAL_AXIS_GANG(
       | _BV(REL_E),
       | _BV(REL_X), | _BV(REL_Y), | _BV(REL_Z),
-      | _BV(REL_I), | _BV(REL_J), | _BV(REL_K)
+      | _BV(REL_I), | _BV(REL_J), | _BV(REL_K),
+      | _BV(REL_U), | _BV(REL_V), | _BV(REL_W)
     )) : 0;
   }
   #if HAS_EXTRUDERS
@@ -677,7 +678,7 @@ private:
     static void M48();
   #endif
 
-  #if ENABLED(LCD_SET_PROGRESS_MANUALLY)
+  #if ENABLED(SET_PROGRESS_MANUALLY)
     static void M73();
   #endif
 
@@ -705,6 +706,11 @@ private:
 
   #if ENABLED(M100_FREE_MEMORY_WATCHER)
     static void M100();
+  #endif
+
+  #if ENABLED(BD_SENSOR)
+    static void M102();
+    static void M102_report(const bool forReplay=true);
   #endif
 
   #if HAS_EXTRUDERS
@@ -916,7 +922,7 @@ private:
     static void M290();
   #endif
 
-  #if HAS_BUZZER
+  #if HAS_SOUND
     static void M300();
   #endif
 
@@ -1075,6 +1081,11 @@ private:
     static void M575();
   #endif
 
+  #if HAS_SHAPING
+    static void M593();
+    static void M593_report(const bool forReplay=true);
+  #endif
+
   #if ENABLED(ADVANCED_PAUSE_FEATURE)
     static void M600();
     static void M603();
@@ -1163,14 +1174,6 @@ private:
     static void M919();
   #endif
 
-  #if HAS_L64XX
-    static void M122();
-    static void M906();
-    static void M916();
-    static void M917();
-    static void M918();
-  #endif
-
   #if HAS_MOTOR_CURRENT_SPI || HAS_MOTOR_CURRENT_PWM || HAS_MOTOR_CURRENT_I2C || HAS_MOTOR_CURRENT_DAC
     static void M907();
     #if HAS_MOTOR_CURRENT_SPI || HAS_MOTOR_CURRENT_PWM
@@ -1197,7 +1200,7 @@ private:
     static void M995();
   #endif
 
-  #if BOTH(HAS_SPI_FLASH, SDSUPPORT)
+  #if BOTH(SPI_FLASH, SDSUPPORT)
     static void M993();
     static void M994();
   #endif

@@ -25,6 +25,7 @@ function usage()
      -l           enable linear advance ( pressure control algo )
      -u           old style GUI
      -g           MKS GUI
+     -d           Dual SD Support (EXPERIMENTAL!)
      -v           verbose build
      
    example:
@@ -55,7 +56,7 @@ then
    fi
 fi
 
-while getopts "m:slohvug" opt
+while getopts "m:slohvugd" opt
 do
    case "$opt" in
       m ) machine="$OPTARG" ;;
@@ -73,6 +74,9 @@ do
          ;;
       g ) flags+="-DUSE_MKS_UI "
           name_postfix+="_mks"
+         ;;
+      d ) flags+="-DFF_MULTI_SD "
+          name_postfix+="_sd"
          ;;
       v ) build_silent="" ;;
       ? | h ) usage; exit ;;

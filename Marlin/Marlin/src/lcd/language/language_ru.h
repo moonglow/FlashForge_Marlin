@@ -336,7 +336,7 @@ namespace Language_ru {
   LSTR MSG_MOVE_E                           = _UxGT("Экструдер");
   LSTR MSG_MOVE_EN                          = _UxGT("Экструдер *");
   LSTR MSG_HOTEND_TOO_COLD                  = _UxGT("Сопло не нагрето");
-  LSTR MSG_MOVE_N_MM                        = _UxGT("Движение %sмм");
+  LSTR MSG_MOVE_N_MM                        = _UxGT("Движение $мм");
   LSTR MSG_MOVE_01MM                        = _UxGT("Движение 0.1мм");
   LSTR MSG_MOVE_1MM                         = _UxGT("Движение 1мм");
   LSTR MSG_MOVE_10MM                        = _UxGT("Движение 10мм");
@@ -870,6 +870,10 @@ namespace Language_ru {
 
   LSTR MSG_DRIVER_BACKWARD                  = _UxGT(" драйвер назад");
 
+  #if ENABLED(FF_MULTI_SD)
+    LSTR MSG_SD_INTERNAL                    = _UxGT("Внутренняя SD-карта");  // SDIO
+    LSTR MSG_SD_EXTERNAL                    = _UxGT("Внешняя SD-карта");  // SPI
+  #endif
   LSTR MSG_SD_CARD                          = _UxGT("SD Карта");
   LSTR MSG_USB_DISK                         = _UxGT("USB Диск");
 }
