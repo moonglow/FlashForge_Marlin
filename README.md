@@ -13,6 +13,7 @@
 - [x] Stepper motor current setup ( MCP4018 digital potentiometer )
 - [x] Print cooling fan, chamber fan, endstops, stepper motor signals control
 - [x] External SD card
+- [x] Internal SD card (Not 100% functional yet)
 - [x] USB ( virtual serial port )
 
 #### What's not works?
