@@ -163,7 +163,7 @@ Joystick joystick;
     // norm_jog values of [-1 .. 1] maps linearly to [-feedrate .. feedrate]
     xyz_float_t move_dist{0};
     float hypot2 = 0;
-    LOOP_LINEAR_AXES(i) if (norm_jog[i]) {
+    LOOP_NUM_AXES(i) if (norm_jog[i]) {
       move_dist[i] = seg_time * norm_jog[i] * TERN(EXTENSIBLE_UI, manual_feedrate_mm_s, planner.settings.max_feedrate_mm_s)[i];
       hypot2 += sq(move_dist[i]);
     }
@@ -172,8 +172,9 @@ Joystick joystick;
       current_position += move_dist;
       apply_motion_limits(current_position);
       const float length = sqrt(hypot2);
+      PlannerHints hints(length);
       injecting_now = true;
-      planner.buffer_line(current_position, length / seg_time, active_extruder, length);
+      planner.buffer_line(current_position, length / seg_time, active_extruder, hints);
       injecting_now = false;
     }
   }

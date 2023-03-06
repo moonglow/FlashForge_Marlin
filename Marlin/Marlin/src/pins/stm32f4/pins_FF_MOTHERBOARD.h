@@ -201,6 +201,12 @@ thermosensor K-couple ADS1118
 #define KILL_PIN                            -1
 #define PWR_LOSS                            -1   //Power loss / nAC_FAULT
 
+/* internal SD CARD */
+#if ENABLED(FF_MULTI_SD)
+  #define SDIO_SUPPORT
+  #define SDIO_CLOCK                         4500000   //  4.5 MHz
+#endif
+
 /* external SD CARD */
 #define SDCARD_COMMANDS_SPLIT // enable Toshiba FlashAIR support
 #define SD_DETECT_PIN                       PA15

@@ -79,6 +79,31 @@
 #endif
 
 //
+// Foam Cutter requirements
+//
+
+#if ENABLED(FOAMCUTTER_XYUV)
+  #ifndef MOSFET_C_PIN
+    #define MOSFET_C_PIN                      -1
+  #endif
+  #if HAS_CUTTER && !defined(SPINDLE_LASER_ENA_PIN) && NUM_SERVOS < 2
+    #define SPINDLE_LASER_PWM_PIN              8  // Hardware PWM
+  #endif
+  #ifndef Z_MIN_PIN
+    #define Z_MIN_PIN                         -1
+  #endif
+  #ifndef Z_MAX_PIN
+    #define Z_MAX_PIN                         -1
+  #endif
+  #ifndef I_STOP_PIN
+    #define I_STOP_PIN                        18
+  #endif
+  #ifndef J_STOP_PIN
+    #define J_STOP_PIN                        19
+  #endif
+#endif
+
+//
 // Limit Switches
 //
 #ifndef X_STOP_PIN
@@ -208,16 +233,22 @@
 #define HEATER_0_PIN                MOSFET_A_PIN
 
 #if FET_ORDER_EFB                                 // Hotend, Fan, Bed
-  #define HEATER_BED_PIN            MOSFET_C_PIN
+  #ifndef HEATER_BED_PIN
+    #define HEATER_BED_PIN          MOSFET_C_PIN
+  #endif
 #elif FET_ORDER_EEF                               // Hotend, Hotend, Fan
   #define HEATER_1_PIN              MOSFET_B_PIN
 #elif FET_ORDER_EEB                               // Hotend, Hotend, Bed
   #define HEATER_1_PIN              MOSFET_B_PIN
-  #define HEATER_BED_PIN            MOSFET_C_PIN
+  #ifndef HEATER_BED_PIN
+    #define HEATER_BED_PIN          MOSFET_C_PIN
+  #endif
 #elif FET_ORDER_EFF                               // Hotend, Fan, Fan
   #define FAN1_PIN                  MOSFET_C_PIN
 #elif DISABLED(FET_ORDER_SF)                      // Not Spindle, Fan (i.e., "EFBF" or "EFBE")
-  #define HEATER_BED_PIN            MOSFET_C_PIN
+  #ifndef HEATER_BED_PIN
+    #define HEATER_BED_PIN          MOSFET_C_PIN
+  #endif
   #if EITHER(HAS_MULTI_HOTEND, HEATERS_PARALLEL)
     #define HEATER_1_PIN            MOSFET_D_PIN
   #else
@@ -272,7 +303,9 @@
 #if HAS_CUTTER && !defined(SPINDLE_LASER_ENA_PIN)
   #if NUM_SERVOS < 2                              // Use servo connector if possible
     #define SPINDLE_LASER_ENA_PIN              4  // Pullup or pulldown!
-    #define SPINDLE_LASER_PWM_PIN              6  // Hardware PWM
+    #ifndef SPINDLE_LASER_PWM_PIN
+      #define SPINDLE_LASER_PWM_PIN            6  // Hardware PWM
+    #endif
     #define SPINDLE_DIR_PIN                    5
   #elif HAS_FREE_AUX2_PINS
     #define SPINDLE_LASER_ENA_PIN             40  // Pullup or pulldown!
@@ -552,7 +585,7 @@
 // LCDs and Controllers //
 //////////////////////////
 
-#if HAS_WIRED_LCD
+#if HAS_WIRED_LCD && DISABLED(LCD_PINS_DEFINED)
 
   //#define LCD_SCREEN_ROTATE                180  // 0, 90, 180, 270
 
@@ -682,7 +715,9 @@
       #define BTN_EN1                AUX2_05_PIN
       #define BTN_EN2                AUX2_03_PIN
       #define BTN_ENC                AUX2_04_PIN
-      #define SD_DETECT_PIN          AUX2_08_PIN
+      #ifndef SD_DETECT_PIN
+        #define SD_DETECT_PIN        AUX2_08_PIN
+      #endif
 
     #elif ENABLED(LCD_I2C_PANELOLU2)
 
@@ -699,7 +734,9 @@
       #define BTN_ENC                         -1
 
       #define LCD_SDSS                      SDSS
-      #define SD_DETECT_PIN          EXP2_07_PIN
+      #ifndef SD_DETECT_PIN
+        #define SD_DETECT_PIN        EXP2_07_PIN
+      #endif
 
     #elif EITHER(VIKI2, miniVIKI)
 
@@ -715,7 +752,9 @@
       #define BTN_EN2                          7
       #define BTN_ENC                AUX4_08_PIN
 
-      #define SD_DETECT_PIN                   -1  // Pin 49 for display SD interface, 72 for easy adapter board
+      #ifndef SD_DETECT_PIN
+        #define SD_DETECT_PIN                 -1  // Pin 49 for display SD interface, 72 for easy adapter board
+      #endif
       #define KILL_PIN               EXP2_03_PIN
 
     #elif ENABLED(ELB_FULL_GRAPHIC_CONTROLLER)
@@ -731,7 +770,9 @@
       #define BTN_ENC                EXP2_03_PIN
 
       #define LCD_SDSS                      SDSS
-      #define SD_DETECT_PIN          EXP2_07_PIN
+      #ifndef SD_DETECT_PIN
+        #define SD_DETECT_PIN        EXP2_07_PIN
+      #endif
       #define KILL_PIN               EXP2_08_PIN
 
     #elif EITHER(MKS_MINI_12864, FYSETC_MINI_12864)
@@ -800,7 +841,9 @@
       #define BTN_EN2                AUX2_04_PIN
       #define BTN_ENC                AUX2_03_PIN
 
-      #define SD_DETECT_PIN          AUX3_02_PIN
+      #ifndef SD_DETECT_PIN
+        #define SD_DETECT_PIN        AUX3_02_PIN
+      #endif
       #define KILL_PIN               AUX2_05_PIN
 
     #elif ENABLED(ZONESTAR_LCD)
@@ -815,7 +858,9 @@
 
       #define BEEPER_PIN             EXP1_01_PIN
 
-      #define SD_DETECT_PIN          EXP2_07_PIN
+      #ifndef SD_DETECT_PIN
+        #define SD_DETECT_PIN        EXP2_07_PIN
+      #endif
       #define KILL_PIN               EXP2_08_PIN
 
       #define BTN_EN1                EXP2_05_PIN
@@ -824,7 +869,9 @@
 
     #elif IS_TFTGLCD_PANEL
 
-      #define SD_DETECT_PIN          EXP2_07_PIN
+      #ifndef SD_DETECT_PIN
+        #define SD_DETECT_PIN        EXP2_07_PIN
+      #endif
 
     #else
 
@@ -843,7 +890,7 @@
     #endif
   #endif // IS_NEWPANEL
 
-#endif // HAS_WIRED_LCD
+#endif // HAS_WIRED_LCD && !LCD_PINS_DEFINED
 
 #if IS_RRW_KEYPAD && !HAS_ADC_BUTTONS
   #define SHIFT_OUT_PIN              AUX2_06_PIN
@@ -900,7 +947,9 @@
 
   #define BEEPER_PIN                 EXP1_01_PIN
 
-  #define SD_DETECT_PIN              EXP2_07_PIN
+  #ifndef SD_DETECT_PIN
+    #define SD_DETECT_PIN            EXP2_07_PIN
+  #endif
 
   #define CLCD_MOD_RESET             EXP2_05_PIN
   #define CLCD_SPI_CS                EXP2_03_PIN

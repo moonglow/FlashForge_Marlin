@@ -337,7 +337,7 @@ namespace Language_uk {
   LSTR MSG_MOVE_E                           = _UxGT("Екструдер");
   LSTR MSG_MOVE_EN                          = _UxGT("Екструдер *");
   LSTR MSG_HOTEND_TOO_COLD                  = _UxGT("Сопло дуже холодне");
-  LSTR MSG_MOVE_N_MM                        = _UxGT("Рух %sмм");
+  LSTR MSG_MOVE_N_MM                        = _UxGT("Рух $мм");
   LSTR MSG_MOVE_01MM                        = _UxGT("Рух 0.1мм");
   LSTR MSG_MOVE_1MM                         = _UxGT("Рух 1мм");
   LSTR MSG_MOVE_10MM                        = _UxGT("Рух 10мм");
@@ -455,7 +455,7 @@ namespace Language_uk {
     LSTR MSG_CONTRAST                       = _UxGT("Контраст");
     LSTR MSG_BRIGHTNESS                     = _UxGT("Яскравість");
   #endif
-  LSTR MSG_LCD_TIMEOUT_SEC                  = _UxGT("LCD Таймаут, с");
+  LSTR MSG_SCREEN_TIMEOUT                   = _UxGT("LCD Таймаут, x");
   LSTR MSG_BRIGHTNESS_OFF                   = _UxGT("Підсвітка вимк.");
   LSTR MSG_STORE_EEPROM                     = _UxGT("Зберегти в EEPROM");
   LSTR MSG_LOAD_EEPROM                      = _UxGT("Зчитати з EEPROM");
@@ -912,6 +912,10 @@ namespace Language_uk {
 
   LSTR MSG_DRIVER_BACKWARD                  = _UxGT(" драйвер назад");
 
+  #if ENABLED(FF_MULTI_SD)
+    LSTR MSG_SD_INTERNAL                    = _UxGT("Внутрішня карта SD");  // SDIO
+    LSTR MSG_SD_EXTERNAL                    = _UxGT("Зовнішня карта SD");  // SPI
+  #endif
   LSTR MSG_SD_CARD                          = _UxGT("SD Картка");
   LSTR MSG_USB_DISK                         = _UxGT("USB Диск");
 }

@@ -39,7 +39,7 @@
 #endif
 
 /**
- * M907: Set digital trimpot motor current using axis codes X [Y] [Z] [I] [J] [K] [E]
+ * M907: Set digital trimpot motor current using axis codes X [Y] [Z] [I] [J] [K] [U] [V] [W] [E]
  *   B<current> - Special case for E1 (Requires DIGIPOTSS_PIN or DIGIPOT_MCP4018 or DIGIPOT_MCP4451)
  *   C<current> - Special case for E2 (Requires DIGIPOTSS_PIN or DIGIPOT_MCP4018 or DIGIPOT_MCP4451)
  *   S<current> - Set current in mA for all axes (Requires DIGIPOTSS_PIN or DIGIPOT_MCP4018 or DIGIPOT_MCP4451), or
@@ -48,11 +48,11 @@
 void GcodeSuite::M907() {
   #if HAS_MOTOR_CURRENT_SPI
 
-    if (!parser.seen("BS" LOGICAL_AXES_STRING))
+    if (!parser.seen("BS" STR_AXES_LOGICAL))
       return M907_report();
 
     if (parser.seenval('S')) LOOP_L_N(i, MOTOR_CURRENT_COUNT) stepper.set_digipot_current(i, parser.value_int());
-    LOOP_LOGICAL_AXES(i) if (parser.seenval(IAXIS_CHAR(i))) stepper.set_digipot_current(i, parser.value_int());    // X Y Z (I J K) E (map to drivers according to DIGIPOT_CHANNELS. Default with NUM_AXES 3: map X Y Z E to X Y Z E0)
+    LOOP_LOGICAL_AXES(i) if (parser.seenval(IAXIS_CHAR(i))) stepper.set_digipot_current(i, parser.value_int());    // X Y Z (I J K U V W) E (map to drivers according to DIGIPOT_CHANNELS. Default with NUM_AXES 3: map X Y Z E to X Y Z E0)
     // Additional extruders use B,C.
     // TODO: Change these parameters because 'E' is used and D should be reserved for debugging. B<index>?
     #if E_STEPPERS >= 2
@@ -64,15 +64,15 @@ void GcodeSuite::M907() {
 
   #elif HAS_MOTOR_CURRENT_PWM
 
-    #if ANY_PIN(MOTOR_CURRENT_PWM_X, MOTOR_CURRENT_PWM_Y, MOTOR_CURRENT_PWM_XY, MOTOR_CURRENT_PWM_I, MOTOR_CURRENT_PWM_J, MOTOR_CURRENT_PWM_K)
-      #define HAS_X_Y_XY_I_J_K 1
+    #if ANY_PIN(MOTOR_CURRENT_PWM_X, MOTOR_CURRENT_PWM_Y, MOTOR_CURRENT_PWM_XY, MOTOR_CURRENT_PWM_I, MOTOR_CURRENT_PWM_J, MOTOR_CURRENT_PWM_K, MOTOR_CURRENT_PWM_U, MOTOR_CURRENT_PWM_V, MOTOR_CURRENT_PWM_W)
+      #define HAS_X_Y_XY_I_J_K_U_V_W 1
     #endif
 
-    #if HAS_X_Y_XY_I_J_K || ANY_PIN(MOTOR_CURRENT_PWM_E, MOTOR_CURRENT_PWM_Z)
+    #if HAS_X_Y_XY_I_J_K_U_V_W || ANY_PIN(MOTOR_CURRENT_PWM_E, MOTOR_CURRENT_PWM_Z)
 
       if (!parser.seen("S"
-        #if HAS_X_Y_XY_I_J_K
-          "XY" SECONDARY_AXIS_GANG("I", "J", "K")
+        #if HAS_X_Y_XY_I_J_K_U_V_W
+          "XY" SECONDARY_AXIS_GANG("I", "J", "K", "U", "V", "W")
         #endif
         #if PIN_EXISTS(MOTOR_CURRENT_PWM_Z)
           "Z"
@@ -84,10 +84,11 @@ void GcodeSuite::M907() {
 
       if (parser.seenval('S')) LOOP_L_N(a, MOTOR_CURRENT_COUNT) stepper.set_digipot_current(a, parser.value_int());
 
-      #if HAS_X_Y_XY_I_J_K
-        if (LINEAR_AXIS_GANG(
+      #if HAS_X_Y_XY_I_J_K_U_V_W
+        if (NUM_AXIS_GANG(
                parser.seenval('X'), || parser.seenval('Y'), || false,
-            || parser.seenval('I'), || parser.seenval('J'), || parser.seenval('K')
+            || parser.seenval('I'), || parser.seenval('J'), || parser.seenval('K'),
+            || parser.seenval('U'), || parser.seenval('V'), || parser.seenval('W')
         )) stepper.set_digipot_current(0, parser.value_int());
       #endif
       #if PIN_EXISTS(MOTOR_CURRENT_PWM_Z)
@@ -104,11 +105,11 @@ void GcodeSuite::M907() {
   #if HAS_MOTOR_CURRENT_I2C
     // this one uses actual amps in floating point
     if (parser.seenval('S')) LOOP_L_N(q, DIGIPOT_I2C_NUM_CHANNELS) digipot_i2c.set_current(q, parser.value_float());
-      LOOP_LOGICAL_AXES(i) if (parser.seenval(IAXIS_CHAR(i))) digipot_i2c.set_current(i, parser.value_float());      // X Y Z (I J K) E (map to drivers according to pots adresses. Default with NUM_AXES 3 X Y Z E: map to X Y Z E0)
+      LOOP_LOGICAL_AXES(i) if (parser.seenval(IAXIS_CHAR(i))) digipot_i2c.set_current(i, parser.value_float());      // X Y Z (I J K U V W) E (map to drivers according to pots adresses. Default with NUM_AXES 3 X Y Z E: map to X Y Z E0)
     // Additional extruders use B,C,D.
     // TODO: Change these parameters because 'E' is used and because 'D' should be reserved for debugging. B<index>?
     #if E_STEPPERS >= 2
-      for (uint8_t i = E_AXIS + 1; i < _MIN(DIGIPOT_I2C_NUM_CHANNELS, (E_AXIS+E_STEPPERS)); i++)
+      for (uint8_t i = E_AXIS + 1; i < _MAX(DIGIPOT_I2C_NUM_CHANNELS, (NUM_AXES + 3)); i++)
         if (parser.seenval('B' + i - (E_AXIS + 1))) digipot_i2c.set_current(i, parser.value_float());
     #endif
   #endif
@@ -118,7 +119,7 @@ void GcodeSuite::M907() {
       const float dac_percent = parser.value_float();
       LOOP_LOGICAL_AXES(i) stepper_dac.set_current_percent(i, dac_percent);
     }
-    LOOP_LOGICAL_AXES(i) if (parser.seenval(IAXIS_CHAR(i))) stepper_dac.set_current_percent(i, parser.value_float());   // X Y Z (I J K) E (map to drivers according to DAC_STEPPER_ORDER. Default with NUM_AXES 3: X Y Z E map to X Y Z E0)
+    LOOP_LOGICAL_AXES(i) if (parser.seenval(IAXIS_CHAR(i))) stepper_dac.set_current_percent(i, parser.value_float());   // X Y Z (I J K U V W) E (map to drivers according to DAC_STEPPER_ORDER. Default with NUM_AXES 3: X Y Z E map to X Y Z E0)
   #endif
 }
 
@@ -128,13 +129,13 @@ void GcodeSuite::M907() {
     report_heading_etc(forReplay, F(STR_STEPPER_MOTOR_CURRENTS));
     #if HAS_MOTOR_CURRENT_PWM
       SERIAL_ECHOLNPGM_P(                                     // PWM-based has 3 values:
-          PSTR("  M907 X"), stepper.motor_current_setting[0]  // X, Y, (I, J, K)
+          PSTR("  M907 X"), stepper.motor_current_setting[0]  // X, Y, (I, J, K, U, V, W)
         , SP_Z_STR,         stepper.motor_current_setting[1]  // Z
         , SP_E_STR,         stepper.motor_current_setting[2]  // E
       );
     #elif HAS_MOTOR_CURRENT_SPI
       SERIAL_ECHOPGM("  M907");                               // SPI-based has 5 values:
-      LOOP_LOGICAL_AXES(q) {                                  // X Y Z (I J K) E (map to X Y Z (I J K) E0 by default)
+      LOOP_LOGICAL_AXES(q) {                                  // X Y Z (I J K U V W) E (map to X Y Z (I J K U V W) E0 by default)
         SERIAL_CHAR(' ', IAXIS_CHAR(q));
         SERIAL_ECHO(stepper.motor_current_setting[q]);
       }

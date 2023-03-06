@@ -39,7 +39,11 @@
  *
  * Each card requires about 550 bytes of SRAM so use of a Mega is recommended.
  */
-#define USE_MULTIPLE_CARDS 0 //TODO? ENABLED(MULTI_VOLUME)
+#if ENABLED(FF_MULTI_SD)
+    #define USE_MULTIPLE_CARDS 1
+#else
+    #define USE_MULTIPLE_CARDS 0 //TODO? ENABLED(MULTI_VOLUME)
+#endif
 
 /**
  * Call flush for endl if ENDL_CALLS_FLUSH is nonzero

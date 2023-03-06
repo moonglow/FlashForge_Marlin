@@ -63,7 +63,7 @@
         #if FF_FIX_EXTRUDER_FAN
           const uint8_t fan_index = 0;
         #else
-          const uint8_t fan_index = active_extruder < (FAN_COUNT) ? active_extruder : 0;
+        const uint8_t fan_index = active_extruder < (FAN_COUNT) ? active_extruder : 0;
         #endif
         if (true
           #if REDUNDANT_PART_COOLING_FAN

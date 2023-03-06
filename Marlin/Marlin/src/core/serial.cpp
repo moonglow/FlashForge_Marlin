@@ -35,7 +35,7 @@ PGMSTR(SP_P_STR, " P"); PGMSTR(SP_T_STR, " T"); PGMSTR(NUL_STR,   "");
 
 #define _N_STR(N) PGMSTR(N##_STR, STR_##N);
 #define _N_LBL(N) PGMSTR(N##_LBL, STR_##N ":");
-#define _SP_N_STR(N) PGMSTR(SP_##N##_STR, STR_##N ":");
+#define _SP_N_STR(N) PGMSTR(SP_##N##_STR, " " STR_##N);
 #define _SP_N_LBL(N) PGMSTR(SP_##N##_LBL, " " STR_##N ":");
 MAP(_N_STR, LOGICAL_AXIS_NAMES); MAP(_SP_N_STR, LOGICAL_AXIS_NAMES);
 MAP(_N_LBL, LOGICAL_AXIS_NAMES); MAP(_SP_N_LBL, LOGICAL_AXIS_NAMES);
@@ -101,10 +101,10 @@ void print_bin(uint16_t val) {
   }
 }
 
-void print_pos(LINEAR_AXIS_ARGS(const_float_t), FSTR_P const prefix/*=nullptr*/, FSTR_P const suffix/*=nullptr*/) {
+void print_pos(NUM_AXIS_ARGS(const_float_t), FSTR_P const prefix/*=nullptr*/, FSTR_P const suffix/*=nullptr*/) {
   if (prefix) serial_print(prefix);
   SERIAL_ECHOPGM_P(
-    LIST_N(DOUBLE(LINEAR_AXES), SP_X_STR, x, SP_Y_STR, y, SP_Z_STR, z, SP_I_STR, i, SP_J_STR, j, SP_K_STR, k)
+    LIST_N(DOUBLE(NUM_AXES), SP_X_STR, x, SP_Y_STR, y, SP_Z_STR, z, SP_I_STR, i, SP_J_STR, j, SP_K_STR, k, SP_U_STR, u, SP_V_STR, v, SP_W_STR, w)
   );
   if (suffix) serial_print(suffix); else SERIAL_EOL();
 }
