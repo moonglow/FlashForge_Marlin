@@ -1,0 +1,84 @@
+name: "🐛 Bug Report"
+description: Create a new issue for a bug.
+title: "🐛 [BUG] - <title>"
+labels: [
+  "bug"
+]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: Please enter an explicit description of your issue
+      placeholder: Short and explicit description of your incident...
+    validations:
+      required: true
+  - type: textarea
+    id: reprod
+    attributes:
+      label: "Reproduction steps"
+      description: Please provide steps to reproduce the issue reported
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+      render: bash
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: "Screenshots"
+      description: If applicable, add screenshots to help explain your problem.
+      placeholder: |
+        ![DESCRIPTION](LINK.png)
+      render: bash
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Logs"
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: bash
+    validations:
+      required: false
+  - type: dropdown
+    id: printers
+    attributes:
+      label: "Printer"
+      description: What printer are you experiencing the issue with?
+      multiple: true
+      options:
+        - FlashForge Dreamer
+        - FlashForge DreamerNX
+        - FlashForge Inventor
+        - Dremel 3D20
+        - Powerspec Ultra 3D
+        - Monoprice Inventor 1
+    validations:
+      required: true
+  - type: textarea
+    id: fwversion
+    attributes:
+      label: "Marlin Version"
+      description: What version of Marlin Firmware are you experiencing the issue with?
+      placeholder: ex. 2.1.2, v0.15.1, etc.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: fwfeatures
+    attributes:
+      label: "Marlin Features"
+      description: What features are enabled for the build you are experiencing the issue with? (if any)
+      multiple: true
+      options:
+        - swap
+        - dir
+        - la
+        - mks
+        - classic
+    validations:
+      required: false
