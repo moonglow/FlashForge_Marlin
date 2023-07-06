@@ -157,9 +157,7 @@ def Upload(source, target, env):
                                                     'BOARD_CREALITY_V427', 'BOARD_CREALITY_V431',  'BOARD_CREALITY_V452', 'BOARD_CREALITY_V453',
                                                     'BOARD_CREALITY_V24S1']
     # "upload_random_name": generate a random 8.3 firmware filename to upload
-    upload_random_filename = marlin_motherboard in ['BOARD_CREALITY_V4',   'BOARD_CREALITY_V4210', 'BOARD_CREALITY_V422', 'BOARD_CREALITY_V423',
-                                                    'BOARD_CREALITY_V427', 'BOARD_CREALITY_V431',  'BOARD_CREALITY_V452', 'BOARD_CREALITY_V453',
-                                                    'BOARD_CREALITY_V24S1'] and not marlin_long_filename_host_support
+    upload_random_filename = upload_delete_old_bins and not marlin_long_filename_host_support
 
     try:
 
@@ -264,23 +262,39 @@ def Upload(source, target, env):
     except KeyboardInterrupt:
         if port: port.close()
         if filetransfer: filetransfer.abort()
-        if protocol: protocol.shutdown()
+        if protocol:
+            protocol.disconnect()
+            protocol.shutdown()
+        _RollbackUpload(upload_firmware_target_name)
+        _ClosePort()
         raise
 
     except serial.SerialException as se:
-        if port: port.close()
-        print(f'Serial excepion: {se}')
+        # This exception is raised only for send_ascii data (not for binary transfer)
+        print(f'Serial excepion: {se}, transfer aborted')
+        if protocol:
+            protocol.disconnect()
+            protocol.shutdown()
+        _RollbackUpload(upload_firmware_target_name)
+        _ClosePort()
         raise Exception(se)
 
     except MarlinBinaryProtocol.FatalError:
-        if port: port.close()
-        if protocol: protocol.shutdown()
-        print('Too many retries, Abort')
+        print('Too many retries, transfer aborted')
+        if protocol:
+            protocol.disconnect()
+            protocol.shutdown()
+        _RollbackUpload(upload_firmware_target_name)
+        _ClosePort()
         raise
 
-    except:
-        if port: port.close()
-        if protocol: protocol.shutdown()
+    except Exception as ex:
+        print(f"\nException: {ex}, transfer aborted")
+        if protocol:
+            protocol.disconnect()
+            protocol.shutdown()
+        _RollbackUpload(upload_firmware_target_name)
+        _ClosePort()
         print('Firmware not updated')
         raise
 
