@@ -94,7 +94,7 @@ then
    encryption_key="flashforge123456"
 elif [[ "$machine" == "powerspec" ]]
 then
-   flags+="-DFF_DREAMER_MACHINE -DFF_SILVER_PULLEY -DFF_EXTRUDER_SWAP"
+   flags+="-DFF_DREAMER_MACHINE -DFF_SILVER_PULLEY -DFF_EXTRUDER_SWAP -DFF_DREAMER_OLD_MB"
 else
    usage
    exit
