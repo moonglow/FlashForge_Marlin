@@ -1,0 +1,467 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+    build:
+        name: Build Marlin Binaries
+        runs-on: ubuntu-latest
+        steps:
+            - name: Set Timestamp to Current Build Environment Date
+              id: date
+              run: echo "timestamp=$(date +'%m%d%Y')" >> $GITHUB_OUTPUT
+
+            - name: Checkout Code
+              uses: actions/checkout@v3
+              with:
+                submodules: recursive
+                
+            - uses: actions/cache@v3
+              with:
+                path: |
+                  ~/.cache/pip
+                  ~/.platformio/.cache
+                key: ${{ runner.os }}-pio
+            - uses: actions/setup-python@v4
+              with: 
+                python-version: '3.9'
+            - name: Install PlatformIO Core
+              run: pip install --upgrade platformio
+
+            - name: Build FlashForge Firmware Tool
+              id: ff_fw_tool
+              run: |
+                gcc $FW_TOOL_SRC_DIR/main.c -o $FW_TOOL_SRC_DIR/ff_fw_tool
+                echo "fw_tool=$FW_TOOL_SRC_DIR/ff_fw_tool" >> $GITHUB_OUTPUT
+              env:
+                FW_TOOL_SRC_DIR: flashforge_firmware_tool
+
+            - name: Set Persistent Firmware Variables
+              id: firmware
+              run: | 
+                echo "project_dir=Marlin" >> $GITHUB_OUTPUT
+                echo "build_env=FF_F407ZG" >> $GITHUB_OUTPUT
+                echo "fw_version=$(awk '/fine SHORT_BUILD_VERSION/{ print substr($3,2,length($3)-2) }' Marlin/Marlin/Version.h)" >> $GITHUB_OUTPUT
+                echo "encryption_key=flashforge790315" >> $GITHUB_OUTPUT
+                echo "dremel_key=flashforge123456" >> $GITHUB_OUTPUT
+                echo "target_ui=color_ui" >> $GITHUB_OUTPUT
+
+            - name: Create Build Directory
+              run: mkdir -p build -v
+
+            # Dreamer Builds
+            - name: Build Marlin - dreamer
+              id: dreamer
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: dreamer
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: 
+                PLATFORMIO_BUILD_FLAGS: -DFF_DREAMER_MACHINE
+
+            - name: Build Marlin - dreamer_dir
+              id: dreamer_dir
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: dreamer
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _dir
+                PLATFORMIO_BUILD_FLAGS: -DFF_DREAMER_MACHINE -DFF_DREAMER_OLD_MB
+
+            - name: Build Marlin - dreamer_dir_la
+              id: dreamer_dir_la
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: dreamer
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _dir_la
+                PLATFORMIO_BUILD_FLAGS: -DFF_DREAMER_MACHINE -DFF_DREAMER_OLD_MB -DLIN_ADVANCE
+
+            - name: Build Marlin - dreamer_dir_swap
+              id: dreamer_dir_swap
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: dreamer
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _dir_swap
+                PLATFORMIO_BUILD_FLAGS: -DFF_DREAMER_MACHINE -DFF_DREAMER_OLD_MB -DFF_EXTRUDER_SWAP
+
+            - name: Build Marlin - dreamer_dir_swap_la
+              id: dreamer_dir_swap_la
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: dreamer
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _dir_swap_la
+                PLATFORMIO_BUILD_FLAGS: -DFF_DREAMER_MACHINE -DFF_DREAMER_OLD_MB -DFF_EXTRUDER_SWAP -DLIN_ADVANCE
+
+            - name: Build Marlin - dreamer_la
+              id: dreamer_la
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: dreamer
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _la
+                PLATFORMIO_BUILD_FLAGS: -DFF_DREAMER_MACHINE -DLIN_ADVANCE
+
+            - name: Build Marlin - dreamer_swap
+              id: dreamer_swap
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: dreamer
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _swap
+                PLATFORMIO_BUILD_FLAGS: -DFF_DREAMER_MACHINE -DFF_EXTRUDER_SWAP
+
+            - name: Build Marlin - dreamer_swap_la
+              id: dreamer_swap_la
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: dreamer
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _swap_la
+                PLATFORMIO_BUILD_FLAGS: -DFF_DREAMER_MACHINE -DFF_EXTRUDER_SWAP -DLIN_ADVANCE
+
+            # Dremel Builds
+            - name: Build Marlin - dremel
+              id: dremel
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: dremel
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.dremel_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: 
+                PLATFORMIO_BUILD_FLAGS: -DFF_DREMEL_3D20_MACHINE
+
+            - name: Build Marlin - dremel_la
+              id: dremel_la
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: dremel
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.dremel_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _la
+                PLATFORMIO_BUILD_FLAGS: -DFF_DREMEL_3D20_MACHINE -DLIN_ADVANCE
+
+            # Inventor Builds
+            - name: Build Marlin - inventor
+              id: inventor
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: inventor
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: 
+                PLATFORMIO_BUILD_FLAGS: -DFF_INVENTOR_MACHINE
+
+            - name: Build Marlin - inventor_dir
+              id: inventor_dir
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: inventor
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _dir
+                PLATFORMIO_BUILD_FLAGS: -DFF_INVENTOR_MACHINE -DFF_DREAMER_OLD_MB
+
+            - name: Build Marlin - inventor_dir_la
+              id: inventor_dir_la
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: inventor
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _dir_la
+                PLATFORMIO_BUILD_FLAGS: -DFF_INVENTOR_MACHINE -DFF_DREAMER_OLD_MB -DLIN_ADVANCE
+
+            - name: Build Marlin - inventor_dir_swap
+              id: inventor_dir_swap
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: inventor
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _dir_swap
+                PLATFORMIO_BUILD_FLAGS: -DFF_INVENTOR_MACHINE -DFF_DREAMER_OLD_MB -DFF_EXTRUDER_SWAP
+
+            - name: Build Marlin - inventor_dir_swap_la
+              id: inventor_dir_swap_la
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: inventor
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _dir_swap_la
+                PLATFORMIO_BUILD_FLAGS: -DFF_INVENTOR_MACHINE -DFF_DREAMER_OLD_MB -DFF_EXTRUDER_SWAP -DLIN_ADVANCE
+
+            - name: Build Marlin - inventor_la
+              id: inventor_la
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: inventor
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _la
+                PLATFORMIO_BUILD_FLAGS: -DFF_INVENTOR_MACHINE -DLIN_ADVANCE
+
+            - name: Build Marlin - inventor_swap
+              id: inventor_swap
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: inventor
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _swap
+                PLATFORMIO_BUILD_FLAGS: -DFF_INVENTOR_MACHINE -DFF_EXTRUDER_SWAP
+
+            - name: Build Marlin - inventor_swap_la
+              id: inventor_swap_la
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: inventor
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _swap_la
+                PLATFORMIO_BUILD_FLAGS: -DFF_INVENTOR_MACHINE -DFF_EXTRUDER_SWAP -DLIN_ADVANCE
+
+            # DreamerNX Builds
+            - name: Build Marlin - nx
+              id: nx
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: nx
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: 
+                PLATFORMIO_BUILD_FLAGS: -DFF_DREAMER_NX_MACHINE
+
+            - name: Build Marlin - nx_la
+              id: nx_la
+              run: |
+                echo "Build Environment:" $BUILD_ENV
+                echo "Build Flags:" $PLATFORMIO_BUILD_FLAGS
+                pio run --project-dir $PROJECT_DIR -e $BUILD_ENV --silent
+                ./$FF_FW_TOOL -k $KEY -e -i $FW_PATH/firmware.bin -o build/$MACHINE"_"$VERSION$NAME_POSTFIX"_"$TIMESTAMP".bin"
+                rm -rf $FW_PATH/*
+              env:
+                MACHINE: nx
+                PROJECT_DIR: ${{ steps.firmware.outputs.project_dir }}
+                BUILD_ENV: ${{ steps.firmware.outputs.build_env }}
+                FF_FW_TOOL: ${{ steps.ff_fw_tool.outputs.fw_tool }}
+                KEY: ${{ steps.firmware.outputs.encryption_key }}
+                FW_PATH: ${{ steps.firmware.outputs.project_dir }}/.pio/build/${{ steps.firmware.outputs.build_env }}
+                VERSION: ${{ steps.firmware.outputs.fw_version }}
+                TIMESTAMP: ${{ steps.date.outputs.timestamp }}
+                NAME_POSTFIX: _la
+                PLATFORMIO_BUILD_FLAGS: -DFF_DREAMER_NX_MACHINE -DLIN_ADVANCE
+                
+            - name: Display Finished Builds
+              run: find build/ -name "*.bin"
+
+            - name: Upload Binaries Artifact
+              uses: actions/upload-artifact@v3
+              with:
+                name: marlin_${{ steps.firmware.outputs.fw_version }}_${{ steps.firmware.outputs.target_ui }}_${{ steps.date.outputs.timestamp }}
+                path: build/*.bin
+                retention-days: 5

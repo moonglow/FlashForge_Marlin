@@ -50,7 +50,7 @@
 #endif
 
 #if ALL(DWIN_LCD_PROUI, INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
-  #define Z_POST_CLEARANCE HMI_data.z_after_homing;
+  #define Z_POST_CLEARANCE HMI_data.z_after_homing
 #elif defined(Z_AFTER_HOMING)
   #define Z_POST_CLEARANCE Z_AFTER_HOMING
 #elif defined(Z_HOMING_HEIGHT)
@@ -87,7 +87,7 @@ public:
     static xyz_pos_t offset;
 
     #if EITHER(PREHEAT_BEFORE_PROBING, PREHEAT_BEFORE_LEVELING)
-      static void preheat_for_probing(const celsius_t hotend_temp, const celsius_t bed_temp);
+      static void preheat_for_probing(const celsius_t hotend_temp, const celsius_t bed_temp, const bool early=false);
     #endif
 
     static void probe_error_stop();
