@@ -15,7 +15,7 @@
 - [x] External SD card
 - [x] USB ( virtual serial port )
 
-#### What's not works?
+#### What doesn't work?
 - [ ] FlashForge WiFi module
 
 #### Supported printers:
